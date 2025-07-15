@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import axios from "axios";
 
 const AuthContext = createContext();
@@ -23,6 +24,25 @@ export const AuthProvider = ({ children }) => {
     } else {
       delete axios.defaults.headers.common["Authorization"];
     }
+
+    // Add response interceptor to handle auth errors
+    const responseInterceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          // Only logout if we're actually logged in
+          if (token) {
+            console.log("Unauthorized - logging out");
+            logout();
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(responseInterceptor);
+    };
   }, [token]);
 
   // Verify token on app load
@@ -36,6 +56,7 @@ export const AuthProvider = ({ children }) => {
           setUser(response.data.user);
         } catch (error) {
           console.error("Token verification failed:", error);
+          toast.error("Session expired. Please login again.");
           logout();
         }
       }
@@ -61,12 +82,19 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setUser(userData);
 
+      // Delay success toast slightly for better UX
+      setTimeout(() => {
+        toast.success(`Welcome back, ${userData.username}!`);
+      }, 200);
+
       return { success: true };
     } catch (error) {
       console.error("Login error:", error);
+      const errorMessage = error.response?.data?.error || "Login failed";
+      toast.error(errorMessage);
       return {
         success: false,
-        error: error.response?.data?.error || "Login failed",
+        error: errorMessage,
       };
     }
   };
@@ -88,12 +116,19 @@ export const AuthProvider = ({ children }) => {
       setToken(newToken);
       setUser(userData);
 
+      // Delay success toast slightly for better UX
+      setTimeout(() => {
+        toast.success(`Welcome to AI Chat, ${userData.username}!`);
+      }, 200);
+
       return { success: true };
     } catch (error) {
       console.error("Registration error:", error);
+      const errorMessage = error.response?.data?.error || "Registration failed";
+      toast.error(errorMessage);
       return {
         success: false,
-        error: error.response?.data?.error || "Registration failed",
+        error: errorMessage,
       };
     }
   };
@@ -103,6 +138,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     delete axios.defaults.headers.common["Authorization"];
+    toast.success("Logged out successfully!");
   };
 
   const value = {

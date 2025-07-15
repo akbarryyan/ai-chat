@@ -1,38 +1,50 @@
-import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { Eye, EyeOff, Mail, Lock, User, MessageCircle } from 'lucide-react';
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { useAuth } from "../contexts/AuthContext";
+import { Eye, EyeOff, Mail, Lock, User, MessageCircle } from "lucide-react";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
+    username: "",
+    email: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { login, register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
+    // Show loading toast
+    const loadingToast = toast.loading(
+      isLogin ? "Signing you in..." : "Creating your account..."
+    );
+
     try {
-      let result;
-      if (isLogin) {
-        result = await login(formData.email, formData.password);
-      } else {
-        result = await register(formData.username, formData.email, formData.password);
-      }
+      // Add minimum loading delay for better UX
+      const [result] = await Promise.all([
+        isLogin
+          ? login(formData.email, formData.password)
+          : register(formData.username, formData.email, formData.password),
+        new Promise((resolve) => setTimeout(resolve, 1500)), // 1.5 second delay
+      ]);
+
+      toast.dismiss(loadingToast);
 
       if (!result.success) {
         setError(result.error);
+        // Error toast is already shown in AuthContext
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      toast.dismiss(loadingToast);
+      toast.error("An unexpected error occurred");
+      setError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -57,7 +69,7 @@ const Login = () => {
               AI Chat Assistant
             </h1>
             <p className="text-gray-600">
-              {isLogin ? 'Welcome back!' : 'Create your account to get started'}
+              {isLogin ? "Welcome back!" : "Create your account to get started"}
             </p>
           </div>
 
@@ -99,7 +111,7 @@ const Login = () => {
                 <Lock className="h-5 w-5 text-gray-400" />
               </div>
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 name="password"
                 required
                 className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
@@ -134,10 +146,12 @@ const Login = () => {
               {loading ? (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  {isLogin ? 'Signing in...' : 'Creating account...'}
+                  {isLogin ? "Signing in..." : "Creating account..."}
                 </div>
+              ) : isLogin ? (
+                "Sign In"
               ) : (
-                isLogin ? 'Sign In' : 'Create Account'
+                "Create Account"
               )}
             </button>
           </form>
@@ -146,15 +160,21 @@ const Login = () => {
             <button
               onClick={() => {
                 setIsLogin(!isLogin);
-                setError('');
-                setFormData({ username: '', email: '', password: '' });
+                setError("");
+                setFormData({ username: "", email: "", password: "" });
               }}
               className="text-blue-600 hover:text-blue-700 transition-colors text-sm"
             >
               {isLogin ? (
-                <>Don't have an account? <span className="font-semibold">Sign up</span></>
+                <>
+                  Don't have an account?{" "}
+                  <span className="font-semibold">Sign up</span>
+                </>
               ) : (
-                <>Already have an account? <span className="font-semibold">Sign in</span></>
+                <>
+                  Already have an account?{" "}
+                  <span className="font-semibold">Sign in</span>
+                </>
               )}
             </button>
           </div>
