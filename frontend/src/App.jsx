@@ -1,22 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import Login from "./pages/Login";
-import ChatPage from "./pages/ChatPage";
+import { Login, ChatPage, LandingPage } from "./pages";
 import "./App.css";
 
 const AppContent = () => {
   const { isAuthenticated, loading } = useAuth();
+  const [showAuth, setShowAuth] = useState(false);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
-  return isAuthenticated ? <ChatPage /> : <Login />;
+  // Show ChatPage if user is authenticated
+  if (isAuthenticated) {
+    return <ChatPage />;
+  }
+
+  // Show Login if user clicked "Get Started" or auth is needed
+  if (showAuth) {
+    return <Login onBack={() => setShowAuth(false)} />;
+  }
+
+  // Show Landing Page by default
+  return <LandingPage onGetStarted={() => setShowAuth(true)} />;
 };
 
 function App() {
