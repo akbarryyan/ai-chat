@@ -201,7 +201,7 @@ const ChatPage = () => {
       />
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-white/50 backdrop-blur-sm">
+      <div className="flex-1 flex flex-col bg-white/50 backdrop-blur-sm lg:ml-0">
         {/* Header Component */}
         <ChatHeader onToggleSidebar={() => setShowSidebar(true)} />
 
