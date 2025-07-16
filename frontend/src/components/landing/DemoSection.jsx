@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
+const API_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
+
 const DemoSection = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -107,7 +110,7 @@ const DemoSection = () => {
       console.log("Setting initializing state to true..."); // Debug log
 
       // Check if backend is accessible - using correct endpoint
-      const response = await fetch("http://localhost:3001/api/demo/session", {
+      const response = await fetch(`${API_URL}/demo/session`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -243,7 +246,7 @@ const DemoSection = () => {
         })),
       };
 
-      const response = await fetch("http://localhost:3001/api/demo/message", {
+      const response = await fetch(`${API_URL}/demo/message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
