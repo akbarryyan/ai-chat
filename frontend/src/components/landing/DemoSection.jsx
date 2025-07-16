@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Send, Bot, User, Sparkles, MessageSquare } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 const DemoSection = () => {
   const [messages, setMessages] = useState([]);
@@ -16,6 +17,48 @@ const DemoSection = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Custom markdown components for styling
+  const markdownComponents = {
+    p: ({ children }) => (
+      <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>
+    ),
+    strong: ({ children }) => (
+      <strong className="font-bold text-gray-900">{children}</strong>
+    ),
+    em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
+    ul: ({ children }) => (
+      <ul className="list-disc pl-4 mb-2 space-y-1">{children}</ul>
+    ),
+    ol: ({ children }) => (
+      <ol className="list-decimal pl-4 mb-2 space-y-1">{children}</ol>
+    ),
+    li: ({ children }) => <li className="text-gray-700">{children}</li>,
+    code: ({ children }) => (
+      <code className="bg-gray-200 px-1.5 py-0.5 rounded text-sm font-mono text-gray-800">
+        {children}
+      </code>
+    ),
+    pre: ({ children }) => (
+      <pre className="bg-gray-200 p-3 rounded-lg text-sm overflow-x-auto mb-2 font-mono">
+        {children}
+      </pre>
+    ),
+    h1: ({ children }) => (
+      <h1 className="text-lg font-bold mb-2 text-gray-900">{children}</h1>
+    ),
+    h2: ({ children }) => (
+      <h2 className="text-base font-bold mb-2 text-gray-900">{children}</h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className="text-sm font-bold mb-1 text-gray-900">{children}</h3>
+    ),
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-4 border-blue-400 pl-3 py-1 mb-2 bg-blue-50 text-gray-700">
+        {children}
+      </blockquote>
+    ),
+  };
 
   // Initialize demo session
   const initializeDemo = async () => {
@@ -192,7 +235,15 @@ const DemoSection = () => {
                           : "bg-gray-100 text-gray-900"
                       }`}
                     >
-                      <p className="text-sm">{message.content}</p>
+                      {message.type === "user" ? (
+                        <p className="text-sm">{message.content}</p>
+                      ) : (
+                        <div className="text-sm">
+                          <ReactMarkdown components={markdownComponents}>
+                            {message.content}
+                          </ReactMarkdown>
+                        </div>
+                      )}
                     </div>
                     {message.type === "user" && (
                       <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
