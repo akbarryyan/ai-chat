@@ -2,6 +2,27 @@ import { getDbPool } from "../db.js";
 import crypto from "crypto";
 import axios from "axios";
 
+// Helper function to get AKBXR response
+const getAKBXRResponse = async (messages) => {
+  const akbxrRequest = {
+    messages: messages,
+    model: "auto",
+  };
+
+  const response = await axios.post(
+    `${process.env.AKBXR_BASE_URL}/chat/completions`,
+    akbxrRequest,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.AKBXR_API_KEY}`,
+      },
+    }
+  );
+
+  return response.data.choices[0].message.content;
+};
+
 // Create a new anonymous chat session
 export const createDemoSession = async (req, res) => {
   try {
@@ -30,7 +51,7 @@ export const createDemoSession = async (req, res) => {
 // Send message in demo chat
 export const sendDemoMessage = async (req, res) => {
   try {
-    const { sessionToken, message, attachments } = req.body;
+    const { sessionToken, message, attachments, aiModel = "akbxr" } = req.body;
 
     if (
       !sessionToken ||
@@ -109,42 +130,496 @@ export const sendDemoMessage = async (req, res) => {
       content: userContent,
     });
 
-    // Prepare request to AKBXR API
-    const akbxrRequest = {
-      messages: messages,
-      model: "auto",
-    };
-
     let aiReply;
-    try {
-      // Send request to AKBXR API
-      const response = await axios.post(
-        `${process.env.AKBXR_BASE_URL}/chat/completions`,
-        akbxrRequest,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.AKBXR_API_KEY}`,
-          },
-        }
-      );
 
-      aiReply = response.data.choices[0].message.content;
+    let usedModel = aiModel; // Track which model was actually used
 
-      // If AI mentions inability to see images and user uploaded an image, provide demo-specific guidance
-      if (
-        attachments &&
-        attachments.some((att) => att.type.startsWith("image/")) &&
-        (aiReply.toLowerCase().includes("tidak bisa melihat") ||
-          aiReply.toLowerCase().includes("can't see") ||
-          aiReply.toLowerCase().includes("cannot see"))
-      ) {
-        const imageFiles = attachments.filter((att) =>
-          att.type.startsWith("image/")
+    // Choose AI model based on selection
+    if (aiModel === "chatgpt4") {
+      try {
+        console.log(
+          "🤖 Trying ChatGPT-4 API (Ferdev) with text:",
+          userContent.substring(0, 50) + "..."
         );
-        const imageNames = imageFiles.map((img) => img.name).join(", ");
+        console.log("🤖 Session token:", sessionToken);
 
-        aiReply = `🖼️ **Image Upload Demo**
+        // Use Ferdev API for ChatGPT-4 with GET method
+        const chatgptUrl = "https://api.ferdev.my.id/ai/chatgpt";
+        const params = {
+          prompt: userContent,
+          apikey: "key-akbarryyan",
+        };
+
+        console.log("🤖 Making GET request to:", chatgptUrl);
+        console.log("🤖 With params:", params);
+
+        // Try with longer timeout and retry mechanism
+        let chatgptResponse;
+        let lastError;
+
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          try {
+            console.log(`🤖 ChatGPT-4 API (Ferdev) attempt ${attempt}/2...`);
+
+            chatgptResponse = await axios.get(chatgptUrl, {
+              params: params,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              timeout: attempt === 1 ? 30000 : 45000, // Longer timeout on retry
+            });
+
+            console.log("✅ ChatGPT-4 API (Ferdev) request successful!");
+            break; // Success, exit retry loop
+          } catch (attemptError) {
+            lastError = attemptError;
+            console.log(
+              `⚠️ ChatGPT-4 API attempt ${attempt} failed:`,
+              attemptError.message
+            );
+
+            if (attempt < 2) {
+              console.log("🔄 Retrying in 2 seconds...");
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+            }
+          }
+        }
+
+        if (!chatgptResponse) {
+          throw lastError; // Throw the last error if all attempts failed
+        }
+
+        console.log(
+          "🤖 ChatGPT-4 API (Ferdev) response status:",
+          chatgptResponse.status
+        );
+        console.log(
+          "🤖 ChatGPT-4 API (Ferdev) response data:",
+          JSON.stringify(chatgptResponse.data, null, 2)
+        );
+
+        // Check response format for Ferdev API
+        if (chatgptResponse.data) {
+          let chatgptAnswer = null;
+
+          // Try Ferdev API response structure first
+          if (chatgptResponse.data.success && chatgptResponse.data.message) {
+            chatgptAnswer = chatgptResponse.data.message;
+          } else if (
+            chatgptResponse.data.status &&
+            chatgptResponse.data.result
+          ) {
+            chatgptAnswer = chatgptResponse.data.result;
+          }
+          // Fallback to other possible structures
+          else if (chatgptResponse.data.result) {
+            chatgptAnswer = chatgptResponse.data.result;
+          } else if (chatgptResponse.data.response) {
+            chatgptAnswer = chatgptResponse.data.response;
+          } else if (chatgptResponse.data.content) {
+            chatgptAnswer = chatgptResponse.data.content;
+          } else if (typeof chatgptResponse.data === "string") {
+            chatgptAnswer = chatgptResponse.data;
+          }
+
+          if (chatgptAnswer && chatgptAnswer.trim()) {
+            aiReply = `🤖 **ChatGPT-4 Response:**\n\n${chatgptAnswer}`;
+            console.log(
+              "✅ ChatGPT-4 API (Ferdev) success - Found answer in response"
+            );
+          } else {
+            console.log(
+              "❌ ChatGPT-4 API (Ferdev): No valid answer found in response structure"
+            );
+            console.log(
+              "❌ Available fields:",
+              Object.keys(chatgptResponse.data)
+            );
+            throw new Error("ChatGPT-4 API (Ferdev) returned no valid answer");
+          }
+        } else {
+          console.log("❌ ChatGPT-4 API (Ferdev): Empty response data");
+          throw new Error("ChatGPT-4 API (Ferdev) returned empty response");
+        }
+      } catch (chatgptError) {
+        console.error("❌ ChatGPT-4 API (Ferdev) error:", chatgptError.message);
+        if (chatgptError.response) {
+          console.error(
+            "❌ ChatGPT-4 API (Ferdev) error response:",
+            chatgptError.response.data
+          );
+        }
+        usedModel = "akbxr"; // Mark as fallback
+
+        // Determine fallback reason for better user feedback
+        let fallbackReason = "unavailable";
+        if (
+          chatgptError.code === "ECONNABORTED" ||
+          chatgptError.message.includes("timeout")
+        ) {
+          fallbackReason = "timeout - server took too long to respond";
+        } else if (chatgptError.response?.status >= 500) {
+          fallbackReason = "server error";
+        } else if (chatgptError.response?.status === 429) {
+          fallbackReason = "rate limited";
+        } else if (chatgptError.response?.status === 401) {
+          fallbackReason = "API key authentication failed";
+        }
+
+        // Fallback to AKBXR if ChatGPT-4 fails
+        try {
+          console.log("🔄 Falling back to AKBXR API...");
+          const akbxrReply = await getAKBXRResponse(messages);
+          aiReply = `🔶 **AKBXR AI Response** (ChatGPT-4 ${fallbackReason}):\n\n${akbxrReply}`;
+          console.log("✅ AKBXR fallback success");
+        } catch (fallbackError) {
+          console.error("❌ AKBXR fallback error:", fallbackError);
+          aiReply =
+            "Maaf, kedua AI sedang mengalami gangguan. Silakan coba lagi dalam beberapa saat.";
+          usedModel = "error";
+        }
+      }
+    } else if (aiModel === "gemini") {
+      try {
+        console.log(
+          "🤖 Trying Gemini API (Ferdev) with text:",
+          userContent.substring(0, 50) + "..."
+        );
+        console.log("🤖 Session token:", sessionToken);
+
+        // Use Ferdev API for Gemini with GET method (assuming same endpoint structure)
+        const geminiUrl = "https://api.ferdev.my.id/ai/gemini"; // Assuming gemini endpoint
+        const params = {
+          prompt: userContent,
+          apikey: "key-akbarryyan",
+        };
+
+        console.log("🤖 Making GET request to:", geminiUrl);
+        console.log("🤖 With params:", params);
+
+        // Try with longer timeout and retry mechanism
+        let geminiResponse;
+        let lastError;
+
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          try {
+            console.log(`🤖 Gemini API (Ferdev) attempt ${attempt}/2...`);
+
+            geminiResponse = await axios.get(geminiUrl, {
+              params: params,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              timeout: attempt === 1 ? 30000 : 45000, // Longer timeout on retry
+            });
+
+            console.log("✅ Gemini API (Ferdev) request successful!");
+            break; // Success, exit retry loop
+          } catch (attemptError) {
+            lastError = attemptError;
+            console.log(
+              `⚠️ Gemini API attempt ${attempt} failed:`,
+              attemptError.message
+            );
+
+            if (attempt < 2) {
+              console.log("🔄 Retrying in 2 seconds...");
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+            }
+          }
+        }
+
+        if (!geminiResponse) {
+          throw lastError; // Throw the last error if all attempts failed
+        }
+
+        console.log(
+          "🤖 Gemini API (Ferdev) response status:",
+          geminiResponse.status
+        );
+        console.log(
+          "🤖 Gemini API (Ferdev) response data:",
+          JSON.stringify(geminiResponse.data, null, 2)
+        );
+
+        // Check response format for Ferdev API
+        if (geminiResponse.data) {
+          let geminiAnswer = null;
+
+          // Try Ferdev API response structure first
+          if (geminiResponse.data.success && geminiResponse.data.message) {
+            geminiAnswer = geminiResponse.data.message;
+          } else if (geminiResponse.data.status && geminiResponse.data.result) {
+            geminiAnswer = geminiResponse.data.result;
+          }
+          // Fallback to other possible structures
+          else if (geminiResponse.data.result) {
+            geminiAnswer = geminiResponse.data.result;
+          } else if (geminiResponse.data.response) {
+            geminiAnswer = geminiResponse.data.response;
+          } else if (geminiResponse.data.content) {
+            geminiAnswer = geminiResponse.data.content;
+          } else if (typeof geminiResponse.data === "string") {
+            geminiAnswer = geminiResponse.data;
+          }
+
+          if (geminiAnswer && geminiAnswer.trim()) {
+            aiReply = `� **Gemini AI Response:**\n\n${geminiAnswer}`;
+            console.log(
+              "✅ Gemini API (Ferdev) success - Found answer in response"
+            );
+          } else {
+            console.log(
+              "❌ Gemini API (Ferdev): No valid answer found in response structure"
+            );
+            console.log(
+              "❌ Available fields:",
+              Object.keys(geminiResponse.data)
+            );
+            throw new Error("Gemini API (Ferdev) returned no valid answer");
+          }
+        } else {
+          console.log("❌ Gemini API (Ferdev): Empty response data");
+          throw new Error("Gemini API (Ferdev) returned empty response");
+        }
+      } catch (geminiError) {
+        console.error("❌ Gemini API (Ferdev) error:", geminiError.message);
+        if (geminiError.response) {
+          console.error(
+            "❌ Gemini API (Ferdev) error response:",
+            geminiError.response.data
+          );
+        }
+        usedModel = "akbxr"; // Mark as fallback
+
+        // Determine fallback reason for better user feedback
+        let fallbackReason = "unavailable";
+        if (
+          geminiError.code === "ECONNABORTED" ||
+          geminiError.message.includes("timeout")
+        ) {
+          fallbackReason = "timeout - server took too long to respond";
+        } else if (geminiError.response?.status >= 500) {
+          fallbackReason = "server error";
+        } else if (geminiError.response?.status === 429) {
+          fallbackReason = "rate limited";
+        } else if (geminiError.response?.status === 401) {
+          fallbackReason = "API key authentication failed";
+        }
+
+        // Fallback to AKBXR if Gemini fails
+        try {
+          console.log("🔄 Falling back to AKBXR API...");
+          const akbxrReply = await getAKBXRResponse(messages);
+          aiReply = `🔶 **AKBXR AI Response** (Gemini ${fallbackReason}):\n\n${akbxrReply}`;
+          console.log("✅ AKBXR fallback success");
+        } catch (fallbackError) {
+          console.error("❌ AKBXR fallback error:", fallbackError);
+          aiReply =
+            "Maaf, kedua AI sedang mengalami gangguan. Silakan coba lagi dalam beberapa saat.";
+          usedModel = "error";
+        }
+      }
+    } else if (aiModel === "claude") {
+      try {
+        console.log(
+          "🤖 Trying Claude AI (Ferdev) with text:",
+          userContent.substring(0, 50) + "..."
+        );
+        console.log("🤖 Session token:", sessionToken);
+
+        // Use Ferdev API for Claude with GET method
+        const claudeUrl = "https://api.ferdev.my.id/ai/claude";
+        const params = {
+          prompt: userContent,
+          apikey: "key-akbarryyan",
+        };
+
+        console.log("🤖 Making GET request to:", claudeUrl);
+        console.log("🤖 With params:", params);
+
+        // Try with longer timeout and retry mechanism
+        let claudeResponse;
+        let lastError;
+
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          try {
+            console.log(`🤖 Claude AI (Ferdev) attempt ${attempt}/2...`);
+
+            claudeResponse = await axios.get(claudeUrl, {
+              params: params,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              timeout: attempt === 1 ? 30000 : 45000, // Longer timeout on retry
+            });
+
+            console.log("✅ Claude AI (Ferdev) request successful!");
+            break; // Success, exit retry loop
+          } catch (attemptError) {
+            lastError = attemptError;
+            console.log(
+              `⚠️ Claude API attempt ${attempt} failed:`,
+              attemptError.message
+            );
+
+            if (attempt < 2) {
+              console.log("🔄 Retrying in 2 seconds...");
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+            }
+          }
+        }
+
+        if (!claudeResponse) {
+          throw lastError; // Throw the last error if all attempts failed
+        }
+
+        console.log(
+          "🤖 Claude AI (Ferdev) response status:",
+          claudeResponse.status
+        );
+        console.log(
+          "🤖 Claude AI (Ferdev) response data:",
+          JSON.stringify(claudeResponse.data, null, 2)
+        );
+
+        // Check response format for Ferdev API
+        if (claudeResponse.data) {
+          let claudeAnswer = null;
+
+          // Try Ferdev API response structure first
+          if (claudeResponse.data.success && claudeResponse.data.message) {
+            claudeAnswer = claudeResponse.data.message;
+          } else if (claudeResponse.data.status && claudeResponse.data.result) {
+            claudeAnswer = claudeResponse.data.result;
+          }
+          // Fallback to other possible structures
+          else if (claudeResponse.data.result) {
+            claudeAnswer = claudeResponse.data.result;
+          } else if (claudeResponse.data.response) {
+            claudeAnswer = claudeResponse.data.response;
+          } else if (claudeResponse.data.content) {
+            claudeAnswer = claudeResponse.data.content;
+          } else if (typeof claudeResponse.data === "string") {
+            claudeAnswer = claudeResponse.data;
+          }
+
+          if (claudeAnswer && claudeAnswer.trim()) {
+            aiReply = `🧠 **Claude AI Response:**\n\n${claudeAnswer}`;
+            console.log(
+              "✅ Claude AI (Ferdev) success - Found answer in response"
+            );
+          } else {
+            console.log(
+              "❌ Claude AI (Ferdev): No valid answer found in response structure"
+            );
+            console.log(
+              "❌ Available fields:",
+              Object.keys(claudeResponse.data)
+            );
+            throw new Error("Claude AI (Ferdev) returned no valid answer");
+          }
+        } else {
+          console.log("❌ Claude AI (Ferdev): Empty response data");
+          throw new Error("Claude AI (Ferdev) returned empty response");
+        }
+      } catch (claudeError) {
+        console.error("❌ Claude AI (Ferdev) error:", claudeError.message);
+        if (claudeError.response) {
+          console.error(
+            "❌ Claude AI (Ferdev) error response:",
+            claudeError.response.data
+          );
+        }
+        usedModel = "akbxr"; // Mark as fallback
+
+        // Determine fallback reason for better user feedback
+        let fallbackReason = "unavailable";
+        if (
+          claudeError.code === "ECONNABORTED" ||
+          claudeError.message.includes("timeout")
+        ) {
+          fallbackReason = "timeout - server took too long to respond";
+        } else if (claudeError.response?.status >= 500) {
+          fallbackReason = "server error";
+        } else if (claudeError.response?.status === 429) {
+          fallbackReason = "rate limited";
+        } else if (claudeError.response?.status === 401) {
+          fallbackReason = "API key authentication failed";
+        }
+
+        // Fallback to AKBXR if Claude fails
+        try {
+          console.log("🔄 Falling back to AKBXR API...");
+          const akbxrReply = await getAKBXRResponse(messages);
+          aiReply = `🔶 **AKBXR AI Response** (Claude ${fallbackReason}):\n\n${akbxrReply}`;
+          console.log("✅ AKBXR fallback success");
+        } catch (fallbackError) {
+          console.error("❌ AKBXR fallback error:", fallbackError);
+          aiReply =
+            "Maaf, kedua AI sedang mengalami gangguan. Silakan coba lagi dalam beberapa saat.";
+          usedModel = "error";
+        }
+      }
+    } else {
+      // Default: Use AKBXR API
+      try {
+        console.log("🤖 Using AKBXR API (default)...");
+        const akbxrReply = await getAKBXRResponse(messages);
+        aiReply = `🔶 **AKBXR AI Response:**\n\n${akbxrReply}`;
+        console.log("✅ AKBXR API success");
+      } catch (akbxrError) {
+        console.error("❌ AKBXR API error:", akbxrError);
+        usedModel = "error";
+        // Fallback response for AKBXR
+        if (attachments && attachments.length > 0) {
+          const hasImages = attachments.some((att) =>
+            att.type.startsWith("image/")
+          );
+          if (hasImages) {
+            aiReply = `🖼️ **Demo Mode - File Upload**
+
+Saya melihat Anda telah mengupload file! Dalam mode demo ini, saya dapat membantu dengan:
+
+**📱 Yang bisa saya lakukan:**
+• Menjawab pertanyaan umum
+• Membantu dengan teks dan kode
+• Memberikan penjelasan konsep
+• Memberikan saran dan guidance
+
+**📄 Untuk file yang diupload:**
+• Deskripsikan konten file Anda
+• Jelaskan apa yang ingin Anda ketahui
+• Tanyakan hal spesifik yang memerlukan bantuan
+
+**💡 Tips:** Semakin detail deskripsi Anda, semakin baik saya bisa membantu!
+
+Ada yang bisa saya bantu? 😊`;
+          } else {
+            aiReply =
+              "Maaf, saya mengalami kesulitan teknis saat memproses file Anda. Ini adalah versi demo AKBAR AI. Silakan coba lagi atau daftarkan diri untuk pengalaman lengkap!";
+          }
+        } else {
+          aiReply =
+            "Maaf, saya mengalami kesulitan teknis. Ini adalah versi demo AKBAR AI. Silakan coba lagi atau daftarkan diri untuk pengalaman lengkap!";
+        }
+      }
+    }
+
+    // If AI mentions inability to see images and user uploaded an image, provide demo-specific guidance
+    if (
+      attachments &&
+      attachments.some((att) => att.type.startsWith("image/")) &&
+      (aiReply.toLowerCase().includes("tidak bisa melihat") ||
+        aiReply.toLowerCase().includes("can't see") ||
+        aiReply.toLowerCase().includes("cannot see"))
+    ) {
+      const imageFiles = attachments.filter((att) =>
+        att.type.startsWith("image/")
+      );
+      const imageNames = imageFiles.map((img) => img.name).join(", ");
+
+      aiReply = `🖼️ **Image Upload Demo**
 
 Saya melihat Anda telah mengupload gambar: **${imageNames}**
 
@@ -164,41 +639,6 @@ Dalam versi demo ini, saya belum bisa menganalisis konten gambar secara langsung
 **💡 Tips:** Coba deskripsikan gambar Anda, dan saya akan memberikan bantuan terbaik berdasarkan informasi tersebut!
 
 Silakan tanya apa saja yang bisa saya bantu! 😊`;
-      }
-    } catch (apiError) {
-      console.error("AKBXR API error:", apiError);
-      // Fallback to demo response if API fails
-      if (attachments && attachments.length > 0) {
-        const hasImages = attachments.some((att) =>
-          att.type.startsWith("image/")
-        );
-        if (hasImages) {
-          aiReply = `🖼️ **Demo Mode - File Upload**
-
-Saya melihat Anda telah mengupload file! Dalam mode demo ini, saya dapat membantu dengan:
-
-**📱 Yang bisa saya lakukan:**
-• Menjawab pertanyaan umum
-• Membantu dengan teks dan kode
-• Memberikan penjelasan konsep
-• Memberikan saran dan guidance
-
-**📄 Untuk file yang diupload:**
-• Deskripsikan konten file Anda
-• Jelaskan apa yang ingin Anda ketahui
-• Tanyakan hal spesifik yang memerlukan bantuan
-
-**💡 Tips:** Semakin detail deskripsi Anda, semakin baik saya bisa membantu!
-
-Ada yang bisa saya bantu? 😊`;
-        } else {
-          aiReply =
-            "Maaf, saya mengalami kesulitan teknis saat memproses file Anda. Ini adalah versi demo AKBAR AI. Silakan coba lagi atau daftarkan diri untuk pengalaman lengkap!";
-        }
-      } else {
-        aiReply =
-          "Maaf, saya mengalami kesulitan teknis. Ini adalah versi demo AKBAR AI. Silakan coba lagi atau daftarkan diri untuk pengalaman lengkap!";
-      }
     }
 
     // Save chat history with attachments info
@@ -224,6 +664,8 @@ Ada yang bisa saya bantu? 😊`;
     res.json({
       success: true,
       message: aiReply,
+      usedModel: usedModel, // Include which model was actually used
+      requestedModel: aiModel, // Include which model was requested
       timestamp: new Date().toISOString(),
     });
   } catch (error) {

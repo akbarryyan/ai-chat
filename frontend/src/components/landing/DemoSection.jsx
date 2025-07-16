@@ -21,6 +21,7 @@ const DemoSection = () => {
   const [showChat, setShowChat] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState([]);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [selectedAiModel, setSelectedAiModel] = useState("akbxr"); // New state for AI model selection
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -234,6 +235,7 @@ const DemoSection = () => {
       const requestBody = {
         sessionToken,
         message: userMessage,
+        aiModel: selectedAiModel, // Include selected AI model
         attachments: files.map((file) => ({
           name: file.name,
           type: file.type,
@@ -251,13 +253,20 @@ const DemoSection = () => {
 
       const data = await response.json();
       if (data.success) {
-        // Add AI response to chat
+        // Add AI response to chat with model info
         const aiMessage = {
           type: "ai",
           content: data.message,
+          usedModel: data.usedModel,
+          requestedModel: data.requestedModel,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, aiMessage]);
+
+        // Log model usage for debugging
+        console.log(
+          `🤖 Model requested: ${data.requestedModel}, used: ${data.usedModel}`
+        );
       } else {
         throw new Error(data.message);
       }
@@ -443,6 +452,37 @@ const DemoSection = () => {
                         </div>
                       ) : (
                         <div className="text-sm">
+                          {/* Model indicator badge */}
+                          {message.usedModel && (
+                            <div className="mb-2 flex items-center space-x-1">
+                              <span
+                                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                  message.usedModel === "chatgpt4"
+                                    ? "bg-green-100 text-green-800"
+                                    : message.usedModel === "gemini"
+                                    ? "bg-purple-100 text-purple-800"
+                                    : message.usedModel === "claude"
+                                    ? "bg-orange-100 text-orange-800"
+                                    : message.usedModel === "akbxr"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                              >
+                                {message.usedModel === "chatgpt4"
+                                  ? "🤖 ChatGPT-4"
+                                  : message.usedModel === "gemini"
+                                  ? "� Gemini AI"
+                                  : message.usedModel === "akbxr"
+                                  ? "🔶 AKBXR AI"
+                                  : "⚠️ Fallback"}
+                              </span>
+                              {message.requestedModel !== message.usedModel && (
+                                <span className="text-xs text-gray-500">
+                                  (requested: {message.requestedModel})
+                                </span>
+                              )}
+                            </div>
+                          )}
                           <ReactMarkdown components={markdownComponents}>
                             {message.content}
                           </ReactMarkdown>
@@ -521,6 +561,33 @@ const DemoSection = () => {
                     ))}
                   </div>
                 )}
+
+                {/* AI Model Selection */}
+                <div className="mb-3 px-4">
+                  <div className="flex items-center space-x-3">
+                    <Bot className="w-4 h-4 text-blue-600" />
+                    <select
+                      value={selectedAiModel}
+                      onChange={(e) => setSelectedAiModel(e.target.value)}
+                      className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      disabled={isLoading}
+                    >
+                      <option value="akbxr">Default AI (AKBXR)</option>
+                      <option value="chatgpt4">ChatGPT-4</option>
+                      <option value="gemini">Gemini AI</option>
+                      <option value="claude">Claude AI</option>
+                    </select>
+                    <span className="text-xs text-gray-500">
+                      {selectedAiModel === "akbxr"
+                        ? "Balanced & Reliable"
+                        : selectedAiModel === "chatgpt4"
+                        ? "Advanced Language Model"
+                        : selectedAiModel === "gemini"
+                        ? "Google's AI"
+                        : "Anthropic's AI"}
+                    </span>
+                  </div>
+                </div>
 
                 <div className="flex space-x-2">
                   {/* Attachment button */}
