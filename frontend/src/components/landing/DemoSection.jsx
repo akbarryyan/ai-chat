@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import axios from "axios";
 
 const API_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
@@ -109,25 +110,22 @@ const DemoSection = () => {
       setIsInitializing(true);
       console.log("Setting initializing state to true..."); // Debug log
 
-      // Check if backend is accessible - using correct endpoint
-      const response = await fetch(`${API_URL}/demo/session`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      // Check if backend is accessible - using axios
+      const response = await axios.post(
+        `${API_URL}/demo/session`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       console.log("Response received:", response.status); // Debug log
+      console.log("Data received:", response.data); // Debug log
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Data received:", data); // Debug log
-
-      if (data.success && data.sessionToken) {
-        setSessionToken(data.sessionToken);
+      if (response.data.success && response.data.sessionToken) {
+        setSessionToken(response.data.sessionToken);
         setShowChat(true);
         // Add welcome message
         setMessages([
@@ -140,7 +138,7 @@ const DemoSection = () => {
         ]);
         console.log("Demo session initialized successfully"); // Debug log
       } else {
-        console.error("Session creation failed:", data);
+        console.error("Session creation failed:", response.data);
         alert("Failed to start demo. Please try again.");
       }
     } catch (error) {
@@ -246,32 +244,33 @@ const DemoSection = () => {
         })),
       };
 
-      const response = await fetch(`${API_URL}/demo/message`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const response = await axios.post(
+        `${API_URL}/demo/message`,
+        requestBody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const data = await response.json();
-      if (data.success) {
+      if (response.data.success) {
         // Add AI response to chat with model info
         const aiMessage = {
           type: "ai",
-          content: data.message,
-          usedModel: data.usedModel,
-          requestedModel: data.requestedModel,
+          content: response.data.message,
+          usedModel: response.data.usedModel,
+          requestedModel: response.data.requestedModel,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, aiMessage]);
 
         // Log model usage for debugging
         console.log(
-          `🤖 Model requested: ${data.requestedModel}, used: ${data.usedModel}`
+          `🤖 Model requested: ${response.data.requestedModel}, used: ${response.data.usedModel}`
         );
       } else {
-        throw new Error(data.message);
+        throw new Error(response.data.message);
       }
     } catch (error) {
       console.error("Error sending message:", error);
