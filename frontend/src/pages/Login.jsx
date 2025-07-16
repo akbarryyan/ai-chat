@@ -87,20 +87,20 @@ const Login = ({ onBack }) => {
 
       {/* Left Content Section */}
       <div className="hidden lg:flex lg:w-1/2 relative">
-        <div className="w-full flex flex-col justify-center items-center p-16 relative">
+        <div className="w-full flex flex-col justify-center items-center p-8 relative">
           {/* Minimalist Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-100"></div>
 
-          <div className="relative z-10 text-center max-w-md">
-            {/* Modern Hero */}
-            <div className="mb-16">
-              <div className="mb-8">
-                <div className="w-24 h-24 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-3xl mx-auto flex items-center justify-center shadow-2xl shadow-blue-500/25">
-                  <Brain className="w-12 h-12 text-white" />
+          <div className="relative z-10 text-center max-w-sm">
+            {/* Compact Hero */}
+            <div className="mb-8">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-3xl mx-auto flex items-center justify-center shadow-2xl shadow-blue-500/25">
+                  <Brain className="w-10 h-10 text-white" />
                 </div>
               </div>
 
-              <h1 className="text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+              <h1 className="text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
                 Meet Your
                 <br />
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -108,76 +108,70 @@ const Login = ({ onBack }) => {
                 </span>
               </h1>
 
-              <p className="text-xl text-gray-600 leading-relaxed font-light">
+              <p className="text-lg text-gray-600 leading-relaxed font-light">
                 Tingkatkan produktivitas dengan kekuatan AI yang mudah digunakan
               </p>
             </div>
 
-            {/* Key Features */}
-            <div className="space-y-8 mb-16">
+            {/* Compact Features */}
+            <div className="space-y-4 mb-8">
               <div className="flex items-center text-left">
-                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center mr-5 shadow-lg">
-                  <span className="text-white text-xl">⚡</span>
+                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                  <span className="text-white text-lg">⚡</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-lg">
-                    Lightning Fast
-                  </h3>
-                  <p className="text-gray-600">
-                    Jawaban instan untuk setiap pertanyaan Anda
+                  <h3 className="font-bold text-gray-900">Lightning Fast</h3>
+                  <p className="text-gray-600 text-sm">
+                    Jawaban instan untuk setiap pertanyaan
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center text-left">
-                <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center mr-5 shadow-lg">
-                  <span className="text-white text-xl">🎯</span>
+                <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                  <span className="text-white text-lg">🎯</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-lg">
-                    Smart & Accurate
-                  </h3>
-                  <p className="text-gray-600">
-                    AI canggih yang memahami konteks dengan sempurna
+                  <h3 className="font-bold text-gray-900">Smart & Accurate</h3>
+                  <p className="text-gray-600 text-sm">
+                    AI canggih yang memahami konteks
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center text-left">
-                <div className="w-12 h-12 bg-purple-600 rounded-2xl flex items-center justify-center mr-5 shadow-lg">
-                  <span className="text-white text-xl">🚀</span>
+                <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                  <span className="text-white text-lg">🚀</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-lg">
-                    Easy to Use
-                  </h3>
-                  <p className="text-gray-600">
-                    Interface yang intuitif dan mudah dipahami
+                  <h3 className="font-bold text-gray-900">Easy to Use</h3>
+                  <p className="text-gray-600 text-sm">
+                    Interface yang intuitif dan mudah
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Social Proof */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
-              <div className="flex items-center justify-center mb-4">
-                <div className="flex -space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full border-3 border-white shadow-md"></div>
-                  <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-full border-3 border-white shadow-md"></div>
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full border-3 border-white shadow-md"></div>
-                  <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 rounded-full border-3 border-white shadow-md"></div>
+            {/* Compact Social Proof */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/50">
+              <div className="flex items-center justify-center mb-3">
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full border-2 border-white shadow-md"></div>
+                  <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-600 rounded-full border-2 border-white shadow-md"></div>
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full border-2 border-white shadow-md"></div>
+                  <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-pink-600 rounded-full border-2 border-white shadow-md"></div>
                 </div>
               </div>
-              <p className="text-gray-800 font-semibold text-lg mb-2">
+              <p className="text-gray-800 font-semibold mb-1">
                 Bergabung dengan 2,000+ pengguna
               </p>
-              <div className="flex items-center justify-center mb-2">
-                <span className="text-yellow-400 text-lg">★★★★★</span>
-                <span className="ml-2 text-gray-600 font-medium">
+              <div className="flex items-center justify-center mb-1">
+                <span className="text-yellow-400">★★★★★</span>
+                <span className="ml-2 text-gray-600 text-sm font-medium">
                   4.9/5 rating
                 </span>
               </div>
-              <p className="text-gray-600 italic">
+              <p className="text-gray-600 italic text-sm">
                 "Game changer untuk produktivitas!"
               </p>
             </div>
@@ -186,20 +180,20 @@ const Login = ({ onBack }) => {
       </div>
 
       {/* Right Form Section */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8 relative">
+      <div className="w-full lg:w-1/2 flex items-start justify-center pt-8 lg:pt-16 p-4 lg:p-6 relative">
         <div className="w-full max-w-md relative">
           {/* Back Button - only show on small screens or when onBack exists */}
           {onBack && (
             <button
               onClick={onBack}
-              className="flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-all duration-200 hover:scale-105 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 lg:hidden"
+              className="flex items-center text-gray-600 hover:text-blue-600 mb-4 transition-all duration-200 hover:scale-105 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 lg:hidden"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Home
             </button>
           )}
 
-          <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/30 p-8 relative overflow-hidden">
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/30 p-6 relative overflow-hidden">
             {/* Background decorations */}
             <div className="absolute top-0 left-0 w-full h-full">
               <div className="absolute top-4 right-4 w-20 h-20 bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-full blur-xl"></div>
@@ -207,24 +201,24 @@ const Login = ({ onBack }) => {
             </div>
 
             {/* Header - simplified for right column */}
-            <div className="text-center mb-8 relative">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 rounded-2xl mb-6 shadow-lg relative lg:hidden">
-                <Brain className="w-8 h-8 text-white" />
+            <div className="text-center mb-6 relative">
+              <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 rounded-2xl mb-4 shadow-lg relative lg:hidden">
+                <Brain className="w-7 h-7 text-white" />
                 <div className="absolute inset-0 bg-white/20 rounded-2xl animate-pulse"></div>
               </div>
-              <div className="mb-4">
-                <h2 className="text-3xl lg:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 mb-2 lg:hidden">
+              <div className="mb-3">
+                <h2 className="text-2xl lg:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 mb-2 lg:hidden">
                   AKBAR AI
                 </h2>
-                <div className="lg:hidden inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-4 py-1 rounded-full text-xs font-medium mb-4">
+                <div className="lg:hidden inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium mb-3">
                   <Sparkles className="w-3 h-3 mr-1 animate-spin" />
                   Your AI Genius Awaits
                 </div>
-                <h2 className="hidden lg:block text-2xl font-bold text-gray-800 mb-2">
+                <h2 className="hidden lg:block text-xl font-bold text-gray-800 mb-2">
                   {isLogin ? "Welcome Back!" : "Join AKBAR AI"}
                 </h2>
               </div>
-              <p className="text-gray-600 text-lg lg:text-base">
+              <p className="text-gray-600 text-base lg:text-sm">
                 {isLogin ? (
                   <>
                     🎉 <strong>Ready to continue</strong> your AI journey?
@@ -238,7 +232,7 @@ const Login = ({ onBack }) => {
             </div>
 
             {/* Toggle buttons */}
-            <div className="flex bg-gray-100/80 rounded-xl p-1 mb-8 relative overflow-hidden">
+            <div className="flex bg-gray-100/80 rounded-xl p-1 mb-6 relative overflow-hidden">
               <div
                 className={`absolute top-1 bottom-1 w-1/2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg transition-all duration-300 ease-out shadow-lg ${
                   isLogin ? "left-1" : "left-1/2"
@@ -251,7 +245,7 @@ const Login = ({ onBack }) => {
                   setError("");
                   setFormData({ username: "", email: "", password: "" });
                 }}
-                className={`flex-1 py-3 px-4 text-center font-medium transition-all duration-200 rounded-lg relative z-10 ${
+                className={`flex-1 py-2.5 px-4 text-center font-medium transition-all duration-200 rounded-lg relative z-10 ${
                   isLogin ? "text-white" : "text-gray-600 hover:text-gray-800"
                 }`}
               >
@@ -267,7 +261,7 @@ const Login = ({ onBack }) => {
                   setError("");
                   setFormData({ username: "", email: "", password: "" });
                 }}
-                className={`flex-1 py-3 px-4 text-center font-medium transition-all duration-200 rounded-lg relative z-10 ${
+                className={`flex-1 py-2.5 px-4 text-center font-medium transition-all duration-200 rounded-lg relative z-10 ${
                   !isLogin ? "text-white" : "text-gray-600 hover:text-gray-800"
                 }`}
               >
@@ -278,7 +272,7 @@ const Login = ({ onBack }) => {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6 relative">
+            <form onSubmit={handleSubmit} className="space-y-4 relative">
               {!isLogin && (
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -288,7 +282,7 @@ const Login = ({ onBack }) => {
                     type="text"
                     name="username"
                     required
-                    className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm placeholder-gray-400 text-gray-700 hover:border-gray-300"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm placeholder-gray-400 text-gray-700 hover:border-gray-300"
                     placeholder="Choose your username"
                     value={formData.username}
                     onChange={handleChange}
@@ -305,7 +299,7 @@ const Login = ({ onBack }) => {
                   type="email"
                   name="email"
                   required
-                  className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm placeholder-gray-400 text-gray-700 hover:border-gray-300"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm placeholder-gray-400 text-gray-700 hover:border-gray-300"
                   placeholder="Enter your email address"
                   value={formData.email}
                   onChange={handleChange}
@@ -321,7 +315,7 @@ const Login = ({ onBack }) => {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   required
-                  className="w-full pl-12 pr-12 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm placeholder-gray-400 text-gray-700 hover:border-gray-300"
+                  className="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white/50 backdrop-blur-sm placeholder-gray-400 text-gray-700 hover:border-gray-300"
                   placeholder={
                     isLogin ? "Enter your password" : "Create a secure password"
                   }
@@ -343,7 +337,7 @@ const Login = ({ onBack }) => {
               </div>
 
               {error && (
-                <div className="bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-xl p-4 text-red-700 text-sm relative overflow-hidden">
+                <div className="bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-xl p-3 text-red-700 text-sm relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-pink-500/5"></div>
                   <div className="relative flex items-center">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-3 animate-pulse"></div>
@@ -355,7 +349,7 @@ const Login = ({ onBack }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 relative overflow-hidden group"
+                className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 relative overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                 <div className="relative flex items-center justify-center">
@@ -387,7 +381,7 @@ const Login = ({ onBack }) => {
               </button>
             </form>
 
-            <div className="mt-8 text-center relative">
+            <div className="mt-6 text-center relative">
               <div className="relative inline-block">
                 <button
                   onClick={() => {
@@ -419,7 +413,7 @@ const Login = ({ onBack }) => {
             </div>
 
             {/* Bottom decoration */}
-            <div className="mt-6 text-center">
+            <div className="mt-4 text-center">
               <div className="inline-flex items-center text-xs text-gray-400 bg-white/30 px-3 py-1 rounded-full">
                 <Sparkles className="w-3 h-3 mr-1 animate-pulse" />
                 Powered by AKBAR AI Technology
