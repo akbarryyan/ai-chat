@@ -2,6 +2,27 @@ import React from "react";
 import { User, Bot, Sparkles } from "lucide-react";
 
 const ChatMessage = ({ message }) => {
+  // Function to parse markdown-style formatting
+  const parseMarkdown = (text) => {
+    if (!text) return text;
+
+    // Split by bold markers (**text**)
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+
+    return parts.map((part, index) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        // Remove ** markers and make bold
+        const boldText = part.slice(2, -2);
+        return (
+          <strong key={index} className="font-bold">
+            {boldText}
+          </strong>
+        );
+      }
+      return part;
+    });
+  };
+
   const getModelBadge = (usedModel, requestedModel) => {
     if (!usedModel) return null;
 
@@ -82,7 +103,7 @@ const ChatMessage = ({ message }) => {
             getModelBadge(message.usedModel, message.requestedModel)}
 
           <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">
-            {message.content}
+            {parseMarkdown(message.content)}
           </p>
           <div
             className={`text-xs mt-2 ${
