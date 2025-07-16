@@ -1,17 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Brain, Menu, X } from "lucide-react";
 
 const Header = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showItems, setShowItems] = useState(false);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      // Delay showing items to create stagger effect
+      const timer = setTimeout(() => {
+        setShowItems(true);
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      setShowItems(false);
+    }
+  }, [isMobileMenuOpen]);
 
   const handleGetStarted = () => {
     navigate("/login");
   };
 
   const toggleMobileMenu = () => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
     setIsMobileMenuOpen(!isMobileMenuOpen);
+
     // Prevent body scroll when menu is open
     if (!isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -24,15 +42,29 @@ const Header = () => {
       document.body.style.width = "unset";
       document.documentElement.style.overflow = "unset";
     }
+
+    // Reset animation state after transition
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 300);
   };
 
   const closeMobileMenu = () => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
     setIsMobileMenuOpen(false);
+
     // Restore body scroll
     document.body.style.overflow = "unset";
     document.body.style.position = "unset";
     document.body.style.width = "unset";
     document.documentElement.style.overflow = "unset";
+
+    // Reset animation state after transition
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 300);
   };
 
   const handleNavClick = (sectionId) => {
@@ -137,7 +169,7 @@ const Header = () => {
         </div>
 
         {/* Mobile Menu Overlay */}
-        {isMobileMenuOpen && (
+        {(isMobileMenuOpen || isAnimating) && (
           <>
             {/* Backdrop overlay - covers ALL content behind */}
             <div
@@ -160,7 +192,7 @@ const Header = () => {
 
             {/* Menu panel */}
             <div
-              className={`fixed top-0 right-0 h-full w-80 shadow-2xl border-l border-gray-200 z-[999] md:hidden transform transition-all duration-300 ease-out ${
+              className={`fixed top-0 right-0 h-full w-80 shadow-2xl border-l border-gray-200 z-[999] md:hidden transition-all duration-300 ease-out ${
                 isMobileMenuOpen
                   ? "translate-x-0 opacity-100"
                   : "translate-x-full opacity-0"
@@ -208,13 +240,13 @@ const Header = () => {
                   <nav className="flex flex-col space-y-3 mb-8 flex-shrink-0">
                     <button
                       onClick={() => handleNavClick("home")}
-                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group transform ${
-                        isMobileMenuOpen
+                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 group transform ${
+                        showItems
                           ? "translate-x-0 opacity-100"
                           : "translate-x-8 opacity-0"
                       }`}
                       style={{
-                        transitionDelay: isMobileMenuOpen ? "100ms" : "0ms",
+                        transitionDelay: showItems ? "100ms" : "0ms",
                       }}
                     >
                       <span className="font-medium">Home</span>
@@ -223,13 +255,13 @@ const Header = () => {
 
                     <button
                       onClick={() => handleNavClick("features")}
-                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group transform ${
-                        isMobileMenuOpen
+                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 group transform ${
+                        showItems
                           ? "translate-x-0 opacity-100"
                           : "translate-x-8 opacity-0"
                       }`}
                       style={{
-                        transitionDelay: isMobileMenuOpen ? "150ms" : "0ms",
+                        transitionDelay: showItems ? "150ms" : "0ms",
                       }}
                     >
                       <span className="font-medium">Features</span>
@@ -238,13 +270,13 @@ const Header = () => {
 
                     <button
                       onClick={() => handleNavClick("impact")}
-                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group transform ${
-                        isMobileMenuOpen
+                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 group transform ${
+                        showItems
                           ? "translate-x-0 opacity-100"
                           : "translate-x-8 opacity-0"
                       }`}
                       style={{
-                        transitionDelay: isMobileMenuOpen ? "200ms" : "0ms",
+                        transitionDelay: showItems ? "200ms" : "0ms",
                       }}
                     >
                       <span className="font-medium">Impact</span>
@@ -253,13 +285,13 @@ const Header = () => {
 
                     <button
                       onClick={() => handleNavClick("testimonials")}
-                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group transform ${
-                        isMobileMenuOpen
+                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 group transform ${
+                        showItems
                           ? "translate-x-0 opacity-100"
                           : "translate-x-8 opacity-0"
                       }`}
                       style={{
-                        transitionDelay: isMobileMenuOpen ? "250ms" : "0ms",
+                        transitionDelay: showItems ? "250ms" : "0ms",
                       }}
                     >
                       <span className="font-medium">Reviews</span>
@@ -270,12 +302,12 @@ const Header = () => {
                   {/* CTA Button */}
                   <div
                     className={`mt-auto flex-shrink-0 transform transition-all duration-300 ${
-                      isMobileMenuOpen
+                      showItems
                         ? "translate-y-0 opacity-100"
                         : "translate-y-8 opacity-0"
                     }`}
                     style={{
-                      transitionDelay: isMobileMenuOpen ? "300ms" : "0ms",
+                      transitionDelay: showItems ? "300ms" : "0ms",
                     }}
                   >
                     <button
@@ -293,12 +325,12 @@ const Header = () => {
                     {/* Social proof in mobile menu */}
                     <div
                       className={`mt-4 text-center bg-gray-50 rounded-xl p-3 mb-4 transform transition-all duration-300 ${
-                        isMobileMenuOpen
+                        showItems
                           ? "scale-100 opacity-100"
                           : "scale-95 opacity-0"
                       }`}
                       style={{
-                        transitionDelay: isMobileMenuOpen ? "350ms" : "0ms",
+                        transitionDelay: showItems ? "350ms" : "0ms",
                       }}
                     >
                       <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 mb-2">
