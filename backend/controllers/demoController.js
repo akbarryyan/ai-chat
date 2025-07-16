@@ -1,5 +1,6 @@
 import { getDbPool } from "../db.js";
 import crypto from "crypto";
+import axios from "axios";
 
 // Create a new anonymous chat session
 export const createDemoSession = async (req, res) => {
@@ -55,16 +56,62 @@ export const sendDemoMessage = async (req, res) => {
 
     const sessionId = sessions[0].id;
 
-    // Simple AI response (you can integrate with actual AI service here)
-    const aiResponses = [
-      "Hello! I'm AKBAR AI. I can help you with various questions and tasks. What would you like to know?",
-      "That's an interesting question! Based on my understanding, I can provide you with relevant information and assistance.",
-      "I'm here to help! Feel free to ask me anything about technology, general knowledge, or how I can assist you.",
-      "Thank you for trying our demo! I'm designed to be helpful, harmless, and honest in all my responses.",
-      "Great question! I can help you with problem-solving, creative tasks, analysis, and much more. What specific area interests you?",
-    ];
+    // Get chat history to maintain context
+    const [history] = await pool.execute(
+      `SELECT user_message, ai_reply FROM anonymous_chat_history 
+       WHERE session_id = ? ORDER BY created_at ASC`,
+      [sessionId]
+    );
 
-    const aiReply = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+    // Prepare messages array for API context
+    const messages = [];
+
+    // Add conversation history for context (limit to last 10 exchanges to avoid token limits)
+    const recentHistory = history.slice(-10);
+    for (const chat of recentHistory) {
+      messages.push({
+        role: "user",
+        content: chat.user_message,
+      });
+      messages.push({
+        role: "assistant",
+        content: chat.ai_reply,
+      });
+    }
+
+    // Add current user message
+    messages.push({
+      role: "user",
+      content: message,
+    });
+
+    // Prepare request to AKBXR API
+    const akbxrRequest = {
+      messages: messages,
+      model: "auto",
+    };
+
+    let aiReply;
+    try {
+      // Send request to AKBXR API
+      const response = await axios.post(
+        `${process.env.AKBXR_BASE_URL}/chat/completions`,
+        akbxrRequest,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.AKBXR_API_KEY}`,
+          },
+        }
+      );
+
+      aiReply = response.data.choices[0].message.content;
+    } catch (apiError) {
+      console.error("AKBXR API error:", apiError);
+      // Fallback to demo response if API fails
+      aiReply =
+        "I'm sorry, I'm currently experiencing some technical difficulties. This is a demo version of AKBAR AI. Please try again later or sign up for the full experience!";
+    }
 
     // Save chat history
     await pool.execute(
