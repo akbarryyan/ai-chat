@@ -1,8 +1,8 @@
 import React from "react";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import Login from "./components/Login";
-import ChatPage from "./components/ChatPage";
+import Login from "./pages/Login";
+import ChatPage from "./pages/ChatPage";
 import "./App.css";
 
 const AppContent = () => {
