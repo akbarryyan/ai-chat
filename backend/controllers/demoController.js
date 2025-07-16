@@ -30,12 +30,15 @@ export const createDemoSession = async (req, res) => {
 // Send message in demo chat
 export const sendDemoMessage = async (req, res) => {
   try {
-    const { sessionToken, message } = req.body;
+    const { sessionToken, message, attachments } = req.body;
 
-    if (!sessionToken || !message) {
+    if (
+      !sessionToken ||
+      (!message && (!attachments || attachments.length === 0))
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Session token and message are required",
+        message: "Session token and message or attachments are required",
       });
     }
 
@@ -79,10 +82,31 @@ export const sendDemoMessage = async (req, res) => {
       });
     }
 
-    // Add current user message
+    // Add current user message with attachments
+    let userContent = message || "";
+
+    if (attachments && attachments.length > 0) {
+      // For demo purposes, provide helpful information about attachments
+      const attachmentDescriptions = attachments
+        .map((att) => {
+          if (att.type.startsWith("image/")) {
+            return `User has uploaded an image file: ${att.name}. Since this is a demo version, I cannot actually see the image content, but I can provide general guidance about image analysis, help with common image-related questions, or suggest how to describe images for better assistance.`;
+          } else if (att.type === "application/pdf") {
+            return `User has uploaded a PDF document: ${att.name}. Since this is a demo version, I cannot read the actual PDF content, but I can provide guidance about document analysis, summarization techniques, or help with common document-related tasks.`;
+          } else {
+            return `User has uploaded a document: ${att.name}. Since this is a demo version, I cannot read the actual file content, but I can provide guidance about document processing or help with common document-related questions.`;
+          }
+        })
+        .join("\n");
+
+      userContent = userContent
+        ? `${userContent}\n\n${attachmentDescriptions}`
+        : `${attachmentDescriptions}\n\nPlease provide helpful guidance about working with the uploaded file type, or suggest alternative approaches for the user's request.`;
+    }
+
     messages.push({
       role: "user",
-      content: message,
+      content: userContent,
     });
 
     // Prepare request to AKBXR API
@@ -106,17 +130,89 @@ export const sendDemoMessage = async (req, res) => {
       );
 
       aiReply = response.data.choices[0].message.content;
+
+      // If AI mentions inability to see images and user uploaded an image, provide demo-specific guidance
+      if (
+        attachments &&
+        attachments.some((att) => att.type.startsWith("image/")) &&
+        (aiReply.toLowerCase().includes("tidak bisa melihat") ||
+          aiReply.toLowerCase().includes("can't see") ||
+          aiReply.toLowerCase().includes("cannot see"))
+      ) {
+        const imageFiles = attachments.filter((att) =>
+          att.type.startsWith("image/")
+        );
+        const imageNames = imageFiles.map((img) => img.name).join(", ");
+
+        aiReply = `🖼️ **Image Upload Demo**
+
+Saya melihat Anda telah mengupload gambar: **${imageNames}**
+
+Dalam versi demo ini, saya belum bisa menganalisis konten gambar secara langsung. Namun, untuk membantu Anda lebih baik, Anda bisa:
+
+**📝 Untuk analisis gambar:**
+• Deskripsikan apa yang terlihat dalam gambar
+• Sebutkan warna, bentuk, objek, atau teks yang ada
+• Jelaskan konteks atau tujuan analisis yang diinginkan
+
+**🔧 Fitur yang tersedia:**
+• Analisis teks dan pertanyaan umum
+• Pemecahan masalah matematika (jika dideskripsikan)
+• Bantuan dengan kode atau dokumen teks
+• Guidance dan saran berdasarkan deskripsi
+
+**💡 Tips:** Coba deskripsikan gambar Anda, dan saya akan memberikan bantuan terbaik berdasarkan informasi tersebut!
+
+Silakan tanya apa saja yang bisa saya bantu! 😊`;
+      }
     } catch (apiError) {
       console.error("AKBXR API error:", apiError);
       // Fallback to demo response if API fails
-      aiReply =
-        "I'm sorry, I'm currently experiencing some technical difficulties. This is a demo version of AKBAR AI. Please try again later or sign up for the full experience!";
+      if (attachments && attachments.length > 0) {
+        const hasImages = attachments.some((att) =>
+          att.type.startsWith("image/")
+        );
+        if (hasImages) {
+          aiReply = `🖼️ **Demo Mode - File Upload**
+
+Saya melihat Anda telah mengupload file! Dalam mode demo ini, saya dapat membantu dengan:
+
+**📱 Yang bisa saya lakukan:**
+• Menjawab pertanyaan umum
+• Membantu dengan teks dan kode
+• Memberikan penjelasan konsep
+• Memberikan saran dan guidance
+
+**📄 Untuk file yang diupload:**
+• Deskripsikan konten file Anda
+• Jelaskan apa yang ingin Anda ketahui
+• Tanyakan hal spesifik yang memerlukan bantuan
+
+**💡 Tips:** Semakin detail deskripsi Anda, semakin baik saya bisa membantu!
+
+Ada yang bisa saya bantu? 😊`;
+        } else {
+          aiReply =
+            "Maaf, saya mengalami kesulitan teknis saat memproses file Anda. Ini adalah versi demo AKBAR AI. Silakan coba lagi atau daftarkan diri untuk pengalaman lengkap!";
+        }
+      } else {
+        aiReply =
+          "Maaf, saya mengalami kesulitan teknis. Ini adalah versi demo AKBAR AI. Silakan coba lagi atau daftarkan diri untuk pengalaman lengkap!";
+      }
     }
 
-    // Save chat history
+    // Save chat history with attachments info
+    const messageToSave = message || "Sent attachments";
+    const attachmentInfo =
+      attachments && attachments.length > 0
+        ? JSON.stringify(
+            attachments.map((att) => ({ name: att.name, type: att.type }))
+          )
+        : null;
+
     await pool.execute(
-      `INSERT INTO anonymous_chat_history (session_id, user_message, ai_reply) VALUES (?, ?, ?)`,
-      [sessionId, message, aiReply]
+      `INSERT INTO anonymous_chat_history (session_id, user_message, ai_reply, attachments) VALUES (?, ?, ?, ?)`,
+      [sessionId, messageToSave, aiReply, attachmentInfo]
     );
 
     // Update session timestamp

@@ -56,10 +56,28 @@ export const initializeDatabase = async () => {
         session_id INT NOT NULL,
         user_message TEXT NOT NULL,
         ai_reply TEXT NOT NULL,
+        attachments JSON DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (session_id) REFERENCES chat_sessions(id) ON DELETE CASCADE
       )
     `);
+
+    // Add attachments column if it doesn't exist (for existing databases)
+    try {
+      await connection.execute(`
+        ALTER TABLE chat_history 
+        ADD COLUMN attachments JSON DEFAULT NULL
+      `);
+      console.log("Added attachments column to chat_history");
+    } catch (error) {
+      // Column already exists, ignore the error
+      if (error.code !== "ER_DUP_FIELDNAME") {
+        console.log(
+          "Attachments column already exists or other error:",
+          error.code
+        );
+      }
+    }
 
     // Create anonymous_chat_sessions table for demo users
     await connection.execute(`
@@ -80,10 +98,28 @@ export const initializeDatabase = async () => {
         session_id INT NOT NULL,
         user_message TEXT NOT NULL,
         ai_reply TEXT NOT NULL,
+        attachments JSON DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (session_id) REFERENCES anonymous_chat_sessions(id) ON DELETE CASCADE
       )
     `);
+
+    // Add attachments column if it doesn't exist (for existing databases)
+    try {
+      await connection.execute(`
+        ALTER TABLE anonymous_chat_history 
+        ADD COLUMN attachments JSON DEFAULT NULL
+      `);
+      console.log("Added attachments column to anonymous_chat_history");
+    } catch (error) {
+      // Column already exists, ignore the error
+      if (error.code !== "ER_DUP_FIELDNAME") {
+        console.log(
+          "Attachments column already exists or other error:",
+          error.code
+        );
+      }
+    }
 
     connection.release();
 
