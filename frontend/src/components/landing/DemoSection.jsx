@@ -131,7 +131,7 @@ const DemoSection = () => {
           {
             type: "ai",
             content:
-              "Hello! 👋 Welcome to AKBAR AI Demo. I'm here to help you with questions, provide information, and showcase my capabilities.\n\n**🔧 What I can do:**\n• Answer questions and provide explanations\n• Help with text analysis and writing\n• Assist with coding and technical topics\n• Provide guidance and suggestions\n\n**📁 File Upload:**\n• Upload images or documents using the 📎 button\n• For images: describe what you see for better assistance\n• For documents: let me know what you need help with\n\nWhat would you like to know?",
+              "Hello! 👋 Welcome to AKBAR AI Demo. I'm here to help you with questions, provide information, and showcase my capabilities.\n\n**🔧 What I can do:**\n• Answer questions and provide explanations\n• Help with text analysis and writing\n• Assist with coding and technical topics\n• Provide guidance and suggestions\n\nWhat would you like to know?",
             timestamp: new Date(),
           },
         ]);
@@ -310,13 +310,6 @@ const DemoSection = () => {
             No signup required! Start chatting with our AI assistant right now
             and discover its capabilities firsthand.
           </p>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
-            <p className="text-sm text-blue-800">
-              <strong>📁 File Upload Demo:</strong> You can upload images and
-              documents! For best results with images, describe what you see or
-              what you need help with.
-            </p>
-          </div>
         </div>
 
         {/* Demo Interface */}
