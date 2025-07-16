@@ -12,10 +12,18 @@ const Header = () => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+    // Prevent body scroll when menu is open
+    if (!isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
   };
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+    // Restore body scroll
+    document.body.style.overflow = "unset";
   };
 
   const handleNavClick = (sectionId) => {
@@ -27,7 +35,11 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200/50 z-50">
+    <header
+      className={`fixed top-0 left-0 right-0 ${
+        isMobileMenuOpen ? "bg-white" : "bg-white/80"
+      } backdrop-blur-md border-b border-gray-200/50 z-[1001]`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
@@ -103,7 +115,7 @@ const Header = () => {
           <div className="md:hidden">
             <button
               onClick={toggleMobileMenu}
-              className="relative z-50 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+              className="relative z-[1002] p-2 rounded-lg bg-white/90 backdrop-blur-sm hover:bg-gray-100 transition-colors duration-200 shadow-lg border border-gray-200/50"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
@@ -117,13 +129,28 @@ const Header = () => {
 
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 z-40 md:hidden">
+          <>
+            {/* Backdrop overlay - covers ALL content behind */}
             <div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 z-[998] md:hidden"
               onClick={closeMobileMenu}
+              style={{
+                background: "rgba(0, 0, 0, 0.85)",
+                backdropFilter: "saturate(180%) blur(20px)",
+                WebkitBackdropFilter: "saturate(180%) blur(20px)",
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: "100vw",
+                height: "100vh",
+              }}
             ></div>
-            <div className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out">
-              <div className="flex flex-col h-full pt-20 pb-6 px-6">
+
+            {/* Menu panel */}
+            <div className="fixed top-0 right-0 w-80 bg-white shadow-2xl border-l border-gray-200/50 transform transition-transform duration-300 ease-in-out z-[999] md:hidden">
+              <div className="flex flex-col h-full pt-20 pb-6 px-6 bg-white">
                 {/* Navigation Links */}
                 <nav className="flex flex-col space-y-4 mb-8">
                   <button
@@ -197,7 +224,7 @@ const Header = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </header>
