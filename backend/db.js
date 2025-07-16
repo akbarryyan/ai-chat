@@ -61,6 +61,30 @@ export const initializeDatabase = async () => {
       )
     `);
 
+    // Create anonymous_chat_sessions table for demo users
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS anonymous_chat_sessions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        session_token VARCHAR(255) UNIQUE NOT NULL,
+        title VARCHAR(255) DEFAULT 'Demo Chat',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        expires_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL 24 HOUR)
+      )
+    `);
+
+    // Create anonymous_chat_history table for demo chat history
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS anonymous_chat_history (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        session_id INT NOT NULL,
+        user_message TEXT NOT NULL,
+        ai_reply TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (session_id) REFERENCES anonymous_chat_sessions(id) ON DELETE CASCADE
+      )
+    `);
+
     connection.release();
 
     // Create pool with database

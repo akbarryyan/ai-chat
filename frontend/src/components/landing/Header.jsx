@@ -117,6 +117,19 @@ const Header = () => {
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></div>
             </a>
             <a
+              href="#demo"
+              onClick={(e) => {
+                e.preventDefault();
+                document
+                  .getElementById("demo")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="relative text-gray-600 hover:text-blue-600 transition-all duration-300 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 group cursor-pointer"
+            >
+              <span className="relative z-10">Try Demo</span>
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></div>
+            </a>
+            <a
               href="#impact"
               onClick={(e) => {
                 e.preventDefault();
@@ -269,6 +282,21 @@ const Header = () => {
                     </button>
 
                     <button
+                      onClick={() => handleNavClick("demo")}
+                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 group transform ${
+                        showItems
+                          ? "translate-x-0 opacity-100"
+                          : "translate-x-8 opacity-0"
+                      }`}
+                      style={{
+                        transitionDelay: showItems ? "175ms" : "0ms",
+                      }}
+                    >
+                      <span className="font-medium">Try Demo</span>
+                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+                    </button>
+
+                    <button
                       onClick={() => handleNavClick("impact")}
                       className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 group transform ${
                         showItems
@@ -291,7 +319,7 @@ const Header = () => {
                           : "translate-x-8 opacity-0"
                       }`}
                       style={{
-                        transitionDelay: showItems ? "250ms" : "0ms",
+                        transitionDelay: showItems ? "225ms" : "0ms",
                       }}
                     >
                       <span className="font-medium">Reviews</span>
@@ -307,7 +335,7 @@ const Header = () => {
                         : "translate-y-8 opacity-0"
                     }`}
                     style={{
-                      transitionDelay: showItems ? "300ms" : "0ms",
+                      transitionDelay: showItems ? "275ms" : "0ms",
                     }}
                   >
                     <button
@@ -330,7 +358,7 @@ const Header = () => {
                           : "scale-95 opacity-0"
                       }`}
                       style={{
-                        transitionDelay: showItems ? "350ms" : "0ms",
+                        transitionDelay: showItems ? "325ms" : "0ms",
                       }}
                     >
                       <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 mb-2">

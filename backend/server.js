@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { initializeDatabase } from "./db.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import demoRoutes from "./routes/demoRoutes.js";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ initializeDatabase();
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api", chatRoutes);
+app.use("/api/demo", demoRoutes);
 
 // Health check route
 app.get("/health", (req, res) => {

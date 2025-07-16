@@ -3,6 +3,7 @@ import {
   Header,
   HeroSection,
   FeaturesSection,
+  DemoSection,
   TestimonialsSection,
   StatsSection,
   CTASection,
@@ -27,6 +28,9 @@ const LandingPage = () => {
 
       {/* Features Section */}
       <FeaturesSection />
+
+      {/* Demo Section */}
+      <DemoSection />
 
       {/* Testimonials Section */}
       <TestimonialsSection />
