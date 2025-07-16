@@ -15,8 +15,14 @@ const Header = () => {
     // Prevent body scroll when menu is open
     if (!isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
+      document.documentElement.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
+      document.body.style.position = "unset";
+      document.body.style.width = "unset";
+      document.documentElement.style.overflow = "unset";
     }
   };
 
@@ -24,6 +30,9 @@ const Header = () => {
     setIsMobileMenuOpen(false);
     // Restore body scroll
     document.body.style.overflow = "unset";
+    document.body.style.position = "unset";
+    document.body.style.width = "unset";
+    document.documentElement.style.overflow = "unset";
   };
 
   const handleNavClick = (sectionId) => {
@@ -132,93 +141,184 @@ const Header = () => {
           <>
             {/* Backdrop overlay - covers ALL content behind */}
             <div
-              className="fixed inset-0 z-[998] md:hidden"
+              className={`fixed inset-0 z-[998] md:hidden transition-all duration-300 ease-out ${
+                isMobileMenuOpen ? "opacity-100" : "opacity-0"
+              }`}
               onClick={closeMobileMenu}
               style={{
-                background: "rgba(0, 0, 0, 0.85)",
-                backdropFilter: "saturate(180%) blur(20px)",
-                WebkitBackdropFilter: "saturate(180%) blur(20px)",
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
+                top: "0",
+                left: "0",
                 width: "100vw",
                 height: "100vh",
+                backgroundColor: "rgba(0, 0, 0, 0.85)",
+                backdropFilter: "blur(20px) saturate(180%)",
+                WebkitBackdropFilter: "blur(20px) saturate(180%)",
+                position: "fixed",
+                zIndex: 998,
               }}
             ></div>
 
             {/* Menu panel */}
-            <div className="fixed top-0 right-0 w-80 bg-white shadow-2xl border-l border-gray-200/50 transform transition-transform duration-300 ease-in-out z-[999] md:hidden">
-              <div className="flex flex-col h-full pt-20 pb-6 px-6 bg-white">
-                {/* Navigation Links */}
-                <nav className="flex flex-col space-y-4 mb-8">
-                  <button
-                    onClick={() => handleNavClick("home")}
-                    className="flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 group"
-                  >
-                    <span className="font-medium">Home</span>
-                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
-                  </button>
-
-                  <button
-                    onClick={() => handleNavClick("features")}
-                    className="flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 group"
-                  >
-                    <span className="font-medium">Features</span>
-                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
-                  </button>
-
-                  <button
-                    onClick={() => handleNavClick("impact")}
-                    className="flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 group"
-                  >
-                    <span className="font-medium">Impact</span>
-                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
-                  </button>
-
-                  <button
-                    onClick={() => handleNavClick("testimonials")}
-                    className="flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 group"
-                  >
-                    <span className="font-medium">Reviews</span>
-                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
-                  </button>
-                </nav>
-
-                {/* CTA Button */}
-                <div className="mt-auto">
-                  <button
-                    onClick={() => {
-                      handleGetStarted();
-                      closeMobileMenu();
-                    }}
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center justify-center space-x-2 relative overflow-hidden group"
-                  >
-                    <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                    <span className="relative">🚀 Get Started</span>
-                    <ArrowRight className="w-4 h-4 relative group-hover:translate-x-1 transition-transform" />
-                  </button>
-
-                  {/* Social proof in mobile menu */}
-                  <div className="mt-4 text-center">
-                    <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 mb-2">
-                      <div className="flex -space-x-1">
-                        <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full border-2 border-white"></div>
-                        <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-full border-2 border-white"></div>
-                        <div className="w-6 h-6 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full border-2 border-white"></div>
-                      </div>
-                      <span>50K+ users</span>
+            <div
+              className={`fixed top-0 right-0 h-full w-80 shadow-2xl border-l border-gray-200 z-[999] md:hidden transform transition-all duration-300 ease-out ${
+                isMobileMenuOpen
+                  ? "translate-x-0 opacity-100"
+                  : "translate-x-full opacity-0"
+              }`}
+              style={{
+                backgroundColor: "white",
+                position: "fixed",
+                zIndex: 999,
+                height: "100vh",
+                boxShadow: "-10px 0 50px rgba(0, 0, 0, 0.3)",
+              }}
+            >
+              <div className="flex flex-col min-h-screen">
+                {/* Header dengan Logo dan Close Button */}
+                <div
+                  className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0"
+                  style={{
+                    backgroundColor: "white",
+                  }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                      <Brain className="w-5 h-5 text-white" />
                     </div>
-                    <div className="flex items-center justify-center space-x-1 text-sm text-gray-500">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <span key={i} className="text-xs">
-                            ★
-                          </span>
-                        ))}
+                    <span className="text-lg font-bold text-gray-900">
+                      AKBAR AI
+                    </span>
+                  </div>
+                  <button
+                    onClick={closeMobileMenu}
+                    className="p-2 rounded-lg bg-gray-100/80 hover:bg-gray-200/80 transition-colors duration-200"
+                    aria-label="Close menu"
+                  >
+                    <X className="w-5 h-5 text-gray-700" />
+                  </button>
+                </div>
+
+                <div
+                  className="flex flex-col flex-1 pt-6 pb-6 px-6"
+                  style={{
+                    backgroundColor: "white",
+                  }}
+                >
+                  {/* Navigation Links */}
+                  <nav className="flex flex-col space-y-3 mb-8 flex-shrink-0">
+                    <button
+                      onClick={() => handleNavClick("home")}
+                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group transform ${
+                        isMobileMenuOpen
+                          ? "translate-x-0 opacity-100"
+                          : "translate-x-8 opacity-0"
+                      }`}
+                      style={{
+                        transitionDelay: isMobileMenuOpen ? "100ms" : "0ms",
+                      }}
+                    >
+                      <span className="font-medium">Home</span>
+                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+                    </button>
+
+                    <button
+                      onClick={() => handleNavClick("features")}
+                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group transform ${
+                        isMobileMenuOpen
+                          ? "translate-x-0 opacity-100"
+                          : "translate-x-8 opacity-0"
+                      }`}
+                      style={{
+                        transitionDelay: isMobileMenuOpen ? "150ms" : "0ms",
+                      }}
+                    >
+                      <span className="font-medium">Features</span>
+                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+                    </button>
+
+                    <button
+                      onClick={() => handleNavClick("impact")}
+                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group transform ${
+                        isMobileMenuOpen
+                          ? "translate-x-0 opacity-100"
+                          : "translate-x-8 opacity-0"
+                      }`}
+                      style={{
+                        transitionDelay: isMobileMenuOpen ? "200ms" : "0ms",
+                      }}
+                    >
+                      <span className="font-medium">Impact</span>
+                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+                    </button>
+
+                    <button
+                      onClick={() => handleNavClick("testimonials")}
+                      className={`flex items-center justify-between py-3 px-4 text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group transform ${
+                        isMobileMenuOpen
+                          ? "translate-x-0 opacity-100"
+                          : "translate-x-8 opacity-0"
+                      }`}
+                      style={{
+                        transitionDelay: isMobileMenuOpen ? "250ms" : "0ms",
+                      }}
+                    >
+                      <span className="font-medium">Reviews</span>
+                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+                    </button>
+                  </nav>
+
+                  {/* CTA Button */}
+                  <div
+                    className={`mt-auto flex-shrink-0 transform transition-all duration-300 ${
+                      isMobileMenuOpen
+                        ? "translate-y-0 opacity-100"
+                        : "translate-y-8 opacity-0"
+                    }`}
+                    style={{
+                      transitionDelay: isMobileMenuOpen ? "300ms" : "0ms",
+                    }}
+                  >
+                    <button
+                      onClick={() => {
+                        handleGetStarted();
+                        closeMobileMenu();
+                      }}
+                      className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center justify-center space-x-2 relative overflow-hidden group"
+                    >
+                      <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                      <span className="relative">🚀 Get Started</span>
+                      <ArrowRight className="w-4 h-4 relative group-hover:translate-x-1 transition-transform" />
+                    </button>
+
+                    {/* Social proof in mobile menu */}
+                    <div
+                      className={`mt-4 text-center bg-gray-50 rounded-xl p-3 mb-4 transform transition-all duration-300 ${
+                        isMobileMenuOpen
+                          ? "scale-100 opacity-100"
+                          : "scale-95 opacity-0"
+                      }`}
+                      style={{
+                        transitionDelay: isMobileMenuOpen ? "350ms" : "0ms",
+                      }}
+                    >
+                      <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 mb-2">
+                        <div className="flex -space-x-1">
+                          <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full border-2 border-white"></div>
+                          <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-blue-400 rounded-full border-2 border-white"></div>
+                          <div className="w-6 h-6 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full border-2 border-white"></div>
+                        </div>
+                        <span className="font-medium">50K+ users</span>
                       </div>
-                      <span>4.9/5 rating</span>
+                      <div className="flex items-center justify-center space-x-1 text-sm text-gray-600">
+                        <div className="flex text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <span key={i} className="text-xs">
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                        <span className="font-medium">4.9/5 rating</span>
+                      </div>
                     </div>
                   </div>
                 </div>
