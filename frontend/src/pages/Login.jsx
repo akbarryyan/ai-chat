@@ -273,7 +273,7 @@ const Login = ({ onBack }) => {
               {!isLogin && (
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                    <User className="h-5 w-5 text-gray-900 group-focus-within:text-blue-500 transition-colors" />
                   </div>
                   <input
                     type="text"
@@ -290,7 +290,7 @@ const Login = ({ onBack }) => {
 
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  <Mail className="h-5 w-5 text-gray-900 group-focus-within:text-blue-500 transition-colors" />
                 </div>
                 <input
                   type="email"
@@ -306,7 +306,7 @@ const Login = ({ onBack }) => {
 
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  <Lock className="h-5 w-5 text-gray-900 group-focus-within:text-blue-500 transition-colors" />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
