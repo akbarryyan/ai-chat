@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MessageCircle,
   Zap,
@@ -19,10 +20,15 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const LandingPage = ({ onGetStarted }) => {
+const LandingPage = () => {
+  const navigate = useNavigate();
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [typingText, setTypingText] = useState("");
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+
+  const handleGetStarted = () => {
+    navigate("/login");
+  };
 
   const words = [
     "Intelligent",
@@ -80,7 +86,10 @@ const LandingPage = ({ onGetStarted }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden">
+    <div
+      id="home"
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 relative overflow-hidden"
+    >
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-2 h-2 bg-blue-400 rounded-full animate-ping"></div>
@@ -105,33 +114,77 @@ const LandingPage = ({ onGetStarted }) => {
               </div>
               <span className="text-xl font-bold text-gray-900">AKBAR AI</span>
             </div>
-            <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden md:flex items-center space-x-6">
+              <a
+                href="#home"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document
+                    .getElementById("home")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="relative text-gray-600 hover:text-blue-600 transition-all duration-300 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 group cursor-pointer"
+              >
+                <span className="relative z-10">Home</span>
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></div>
+              </a>
               <a
                 href="#features"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document
+                    .getElementById("features")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="relative text-gray-600 hover:text-blue-600 transition-all duration-300 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 group cursor-pointer"
               >
-                Features
+                <span className="relative z-10">Features</span>
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></div>
               </a>
               <a
-                href="#about"
-                className="text-gray-600 hover:text-blue-600 transition-colors"
+                href="#impact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document
+                    .getElementById("impact")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="relative text-gray-600 hover:text-blue-600 transition-all duration-300 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 group cursor-pointer"
               >
-                About
+                <span className="relative z-10">Impact</span>
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></div>
               </a>
-              <button
-                onClick={onGetStarted}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-105"
+              <a
+                href="#testimonials"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document
+                    .querySelector("#testimonials")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="relative text-gray-600 hover:text-blue-600 transition-all duration-300 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 group cursor-pointer"
               >
-                Get Started
+                <span className="relative z-10">Reviews</span>
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></div>
+              </a>
+              <div className="w-px h-6 bg-gray-300"></div>
+              <button
+                onClick={handleGetStarted}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center space-x-2 relative overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                <span className="relative">Get Started</span>
+                <ArrowRight className="w-4 h-4 relative group-hover:translate-x-1 transition-transform" />
               </button>
             </nav>
             {/* Mobile menu button */}
             <div className="md:hidden">
               <button
-                onClick={onGetStarted}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 text-sm"
+                onClick={handleGetStarted}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold transition-all duration-300 text-sm hover:shadow-lg hover:scale-105 flex items-center space-x-2"
               >
-                Start
+                <span>Start</span>
+                <ArrowRight className="w-3 h-3" />
               </button>
             </div>
           </div>
@@ -166,7 +219,7 @@ const LandingPage = ({ onGetStarted }) => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
                 <button
-                  onClick={onGetStarted}
+                  onClick={handleGetStarted}
                   className="group bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-2xl hover:scale-105 flex items-center justify-center animate-pulse"
                 >
                   🔥 Start Your AI Journey
@@ -418,7 +471,10 @@ const LandingPage = ({ onGetStarted }) => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 relative overflow-hidden">
+      <section
+        id="testimonials"
+        className="py-20 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 relative overflow-hidden"
+      >
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse"></div>
@@ -508,7 +564,7 @@ const LandingPage = ({ onGetStarted }) => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-white/80 backdrop-blur-sm">
+      <section id="impact" className="py-20 bg-white/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -593,7 +649,7 @@ const LandingPage = ({ onGetStarted }) => {
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
             <button
-              onClick={onGetStarted}
+              onClick={handleGetStarted}
               className="group bg-white text-blue-600 hover:bg-gray-50 px-12 py-5 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:scale-110 inline-flex items-center relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -635,7 +691,10 @@ const LandingPage = ({ onGetStarted }) => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-16 relative overflow-hidden">
+      <footer
+        id="about"
+        className="bg-gray-900 text-white py-16 relative overflow-hidden"
+      >
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
           <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-500/10 rounded-full blur-2xl"></div>
@@ -781,7 +840,7 @@ const LandingPage = ({ onGetStarted }) => {
                 All systems operational
               </div>
               <button
-                onClick={onGetStarted}
+                onClick={handleGetStarted}
                 className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105"
               >
                 Try AKBAR AI Free

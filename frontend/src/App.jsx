@@ -1,12 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { Login, ChatPage, LandingPage } from "./pages";
 import "./App.css";
 
 const AppContent = () => {
   const { isAuthenticated, loading } = useAuth();
-  const [showAuth, setShowAuth] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!loading) {
+      // If user is authenticated and not on chat page, redirect to chat
+      if (isAuthenticated && location.pathname !== "/chat") {
+        navigate("/chat", { replace: true });
+      }
+      // If user is not authenticated and on protected route, redirect to landing
+      else if (!isAuthenticated && location.pathname === "/chat") {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [isAuthenticated, loading, navigate, location.pathname]);
 
   if (loading) {
     return (
@@ -16,18 +30,7 @@ const AppContent = () => {
     );
   }
 
-  // Show ChatPage if user is authenticated
-  if (isAuthenticated) {
-    return <ChatPage />;
-  }
-
-  // Show Login if user clicked "Get Started" or auth is needed
-  if (showAuth) {
-    return <Login onBack={() => setShowAuth(false)} />;
-  }
-
-  // Show Landing Page by default
-  return <LandingPage onGetStarted={() => setShowAuth(true)} />;
+  return <Outlet />;
 };
 
 function App() {

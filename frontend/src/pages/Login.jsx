@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Eye,
   EyeOff,
@@ -14,8 +15,10 @@ import {
   Zap,
 } from "lucide-react";
 
-const Login = ({ onBack }) => {
-  const [isLogin, setIsLogin] = useState(true);
+const Login = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(location.pathname === "/login");
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -26,6 +29,15 @@ const Login = ({ onBack }) => {
   const [loading, setLoading] = useState(false);
 
   const { login, register } = useAuth();
+
+  // Update form mode based on URL
+  useEffect(() => {
+    setIsLogin(location.pathname === "/login");
+  }, [location.pathname]);
+
+  const handleBack = () => {
+    navigate("/");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -182,16 +194,14 @@ const Login = ({ onBack }) => {
       {/* Right Form Section */}
       <div className="w-full lg:w-1/2 flex items-start justify-center pt-8 lg:pt-16 p-4 lg:p-6 relative">
         <div className="w-full max-w-md relative">
-          {/* Back Button - only show on small screens or when onBack exists */}
-          {onBack && (
-            <button
-              onClick={onBack}
-              className="flex items-center text-gray-600 hover:text-blue-600 mb-4 transition-all duration-200 hover:scale-105 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 lg:hidden"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
-            </button>
-          )}
+          {/* Back Button - Always visible */}
+          <button
+            onClick={handleBack}
+            className="flex items-center text-gray-600 hover:text-blue-600 mb-4 transition-all duration-200 hover:scale-105 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 shadow-sm hover:shadow-md"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </button>
 
           <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/30 p-6 relative overflow-hidden">
             {/* Background decorations */}
@@ -241,7 +251,7 @@ const Login = ({ onBack }) => {
               <button
                 type="button"
                 onClick={() => {
-                  setIsLogin(true);
+                  navigate("/login");
                   setError("");
                   setFormData({ username: "", email: "", password: "" });
                 }}
@@ -257,7 +267,7 @@ const Login = ({ onBack }) => {
               <button
                 type="button"
                 onClick={() => {
-                  setIsLogin(false);
+                  navigate("/register");
                   setError("");
                   setFormData({ username: "", email: "", password: "" });
                 }}
@@ -385,7 +395,7 @@ const Login = ({ onBack }) => {
               <div className="relative inline-block">
                 <button
                   onClick={() => {
-                    setIsLogin(!isLogin);
+                    navigate(isLogin ? "/register" : "/login");
                     setError("");
                     setFormData({ username: "", email: "", password: "" });
                   }}
