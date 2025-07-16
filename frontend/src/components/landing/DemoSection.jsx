@@ -6,6 +6,7 @@ const DemoSection = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
   const [sessionToken, setSessionToken] = useState(null);
   const [showChat, setShowChat] = useState(false);
   const messagesEndRef = useRef(null);
@@ -60,9 +61,26 @@ const DemoSection = () => {
     ),
   };
 
-  // Initialize demo session
-  const initializeDemo = async () => {
+  // Initialize demo session with mobile support
+  const initializeDemo = async (e) => {
     try {
+      // Prevent default behavior and stop propagation for mobile
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      console.log("Demo initialization triggered"); // Enhanced debug log
+
+      if (isInitializing) {
+        console.log("Already initializing, skipping...");
+        return; // Prevent double clicks
+      }
+
+      setIsInitializing(true);
+      console.log("Setting initializing state to true..."); // Debug log
+
+      // Check if backend is accessible - using correct endpoint
       const response = await fetch("http://localhost:3001/api/demo/session", {
         method: "POST",
         headers: {
@@ -70,8 +88,16 @@ const DemoSection = () => {
         },
       });
 
+      console.log("Response received:", response.status); // Debug log
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
-      if (data.success) {
+      console.log("Data received:", data); // Debug log
+
+      if (data.success && data.sessionToken) {
         setSessionToken(data.sessionToken);
         setShowChat(true);
         // Add welcome message
@@ -83,9 +109,20 @@ const DemoSection = () => {
             timestamp: new Date(),
           },
         ]);
+        console.log("Demo session initialized successfully"); // Debug log
+      } else {
+        console.error("Session creation failed:", data);
+        alert("Failed to start demo. Please try again.");
       }
     } catch (error) {
       console.error("Error initializing demo:", error);
+      // Fallback for offline mode or API issues
+      alert(
+        `Cannot connect to server: ${error.message}. Please check your connection and try again.`
+      );
+    } finally {
+      setIsInitializing(false);
+      console.log("Demo initialization completed, resetting state");
     }
   };
 
@@ -175,24 +212,48 @@ const DemoSection = () => {
         <div className="max-w-4xl mx-auto">
           {!showChat ? (
             /* Start Demo Button */
-            <div className="text-center">
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-                <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <MessageSquare className="w-10 h-10 text-white" />
+            <div className="text-center px-4">
+              <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-gray-100 mx-auto max-w-lg">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                  <MessageSquare className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                   Ready to chat with AKBAR AI?
                 </h3>
-                <p className="text-gray-600 mb-8 max-w-lg mx-auto">
+                <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">
                   Start a conversation and see how our AI can help you with
                   questions, creative tasks, and problem-solving.
                 </p>
                 <button
                   onClick={initializeDemo}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center space-x-2 mx-auto"
+                  onTouchStart={(e) => {
+                    // Handle touch start for mobile
+                    console.log("Touch started on demo button");
+                  }}
+                  onTouchEnd={initializeDemo}
+                  type="button"
+                  disabled={isInitializing}
+                  className={`bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:from-blue-800 active:to-indigo-800 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95 disabled:scale-100 flex items-center justify-center space-x-2 mx-auto cursor-pointer touch-manipulation w-auto min-w-[200px] sm:w-auto ${
+                    isInitializing ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
+                  style={{
+                    WebkitTapHighlightColor: "rgba(59, 130, 246, 0.3)",
+                    touchAction: "manipulation",
+                    userSelect: "none",
+                    WebkitUserSelect: "none",
+                  }}
                 >
-                  <Sparkles className="w-5 h-5" />
-                  <span>Start Demo Chat</span>
+                  {isInitializing ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+                      <span className="whitespace-nowrap">Starting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5 flex-shrink-0" />
+                      <span className="whitespace-nowrap">Start Demo Chat</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
