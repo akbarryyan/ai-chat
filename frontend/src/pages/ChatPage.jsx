@@ -218,19 +218,19 @@ const ChatPage = () => {
           <div ref={messagesEndRef} />
         </div>
 
+        {/* AI Model Selector */}
+        <AiModelSelector
+          selectedModel={selectedAiModel}
+          onModelChange={setSelectedAiModel}
+          disabled={loading}
+        />
+
         {/* Input Component */}
         <ChatInput
           input={input}
           setInput={setInput}
           onSendMessage={sendMessage}
           loading={loading}
-        />
-
-        {/* AI Model Selector */}
-        <AiModelSelector
-          selectedModel={selectedAiModel}
-          onModelChange={setSelectedAiModel}
-          disabled={loading}
         />
       </div>
     </div>

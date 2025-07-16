@@ -64,19 +64,6 @@ const AiModelSelector = ({
         </select>
         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
       </div>
-
-      {currentModel && (
-        <div className="mt-3 p-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border border-gray-200">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm">{currentModel.icon}</span>
-            <span className="text-xs text-gray-700">
-              Aktif:{" "}
-              <strong className="text-blue-700">{currentModel.label}</strong> -{" "}
-              {currentModel.description}
-            </span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
