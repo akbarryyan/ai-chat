@@ -173,7 +173,7 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="h-screen bg-gray-50 flex">
+    <div className="h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 flex">
       {/* Sidebar Component */}
       <ChatSidebar
         showSidebar={showSidebar}
@@ -187,12 +187,12 @@ const ChatPage = () => {
       />
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col bg-white/50 backdrop-blur-sm">
         {/* Header Component */}
         <ChatHeader onToggleSidebar={() => setShowSidebar(true)} />
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {messages.length === 0 && <WelcomeScreen />}
 
           {messages.map((message, index) => (
