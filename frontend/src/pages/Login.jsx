@@ -197,7 +197,7 @@ const Login = () => {
           {/* Back Button - Always visible */}
           <button
             onClick={handleBack}
-            className="flex items-center text-gray-600 hover:text-blue-600 mb-4 transition-all duration-200 hover:scale-105 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 shadow-sm hover:shadow-md"
+            className="flex items-center text-gray-600 hover:text-blue-600 mb-4 transition-all duration-200 hover:scale-105 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 shadow-sm hover:shadow-md cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
