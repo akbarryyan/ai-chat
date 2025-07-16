@@ -5,6 +5,7 @@ export { default as ChatMessage } from "./ChatMessage";
 export { default as LoadingIndicator } from "./LoadingIndicator";
 export { default as ChatInput } from "./ChatInput";
 export { default as WelcomeScreen } from "./WelcomeScreen";
+export { default as AiModelSelector } from "./AiModelSelector";
 
 // Landing page components
 export * from "./landing";

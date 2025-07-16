@@ -11,6 +11,7 @@ import {
   LoadingIndicator,
   ChatInput,
   WelcomeScreen,
+  AiModelSelector,
 } from "../components";
 
 const ChatPage = () => {
@@ -20,6 +21,7 @@ const ChatPage = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [sessions, setSessions] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [selectedAiModel, setSelectedAiModel] = useState("akbxr"); // AI model selection
   const messagesEndRef = useRef(null);
   const { user, logout } = useAuth();
 
@@ -66,7 +68,13 @@ const ChatPage = () => {
       const formattedMessages = [];
       history.forEach((chat) => {
         formattedMessages.push({ role: "user", content: chat.user_message });
-        formattedMessages.push({ role: "assistant", content: chat.ai_reply });
+        formattedMessages.push({
+          role: "assistant",
+          content: chat.ai_reply,
+          // Note: Historical messages may not have model info
+          usedModel: chat.used_model || "akbxr",
+          requestedModel: chat.requested_model,
+        });
       });
 
       setMessages(formattedMessages);
@@ -102,6 +110,7 @@ const ChatPage = () => {
         axios.post("http://localhost:3001/api/chat", {
           message: userMessage,
           sessionId: currentSessionId,
+          aiModel: selectedAiModel, // Include selected AI model
         }),
         new Promise((resolve) => setTimeout(resolve, 800)), // 0.8 second delay
       ]);
@@ -109,7 +118,12 @@ const ChatPage = () => {
       // Add AI response to chat
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: response.data.aiReply },
+        {
+          role: "assistant",
+          content: response.data.aiReply,
+          usedModel: response.data.usedModel,
+          requestedModel: response.data.requestedModel,
+        },
       ]);
 
       // Update current session ID if it was a new session
@@ -210,6 +224,13 @@ const ChatPage = () => {
           setInput={setInput}
           onSendMessage={sendMessage}
           loading={loading}
+        />
+
+        {/* AI Model Selector */}
+        <AiModelSelector
+          selectedModel={selectedAiModel}
+          onModelChange={setSelectedAiModel}
+          disabled={loading}
         />
       </div>
     </div>
