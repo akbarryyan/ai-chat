@@ -32,15 +32,23 @@ const Header = () => {
 
     // Prevent body scroll when menu is open
     if (!isMobileMenuOpen) {
+      // Store current scroll position
+      const scrollY = window.scrollY;
       document.body.style.overflow = "hidden";
       document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
       document.body.style.width = "100%";
       document.documentElement.style.overflow = "hidden";
     } else {
+      // Get the stored scroll position
+      const scrollY = document.body.style.top;
       document.body.style.overflow = "unset";
       document.body.style.position = "unset";
+      document.body.style.top = "unset";
       document.body.style.width = "unset";
       document.documentElement.style.overflow = "unset";
+      // Restore scroll position
+      window.scrollTo(0, parseInt(scrollY || "0") * -1);
     }
 
     // Reset animation state after transition
@@ -55,11 +63,15 @@ const Header = () => {
     setIsAnimating(true);
     setIsMobileMenuOpen(false);
 
-    // Restore body scroll
+    // Get the stored scroll position
+    const scrollY = document.body.style.top;
     document.body.style.overflow = "unset";
     document.body.style.position = "unset";
+    document.body.style.top = "unset";
     document.body.style.width = "unset";
     document.documentElement.style.overflow = "unset";
+    // Restore scroll position
+    window.scrollTo(0, parseInt(scrollY || "0") * -1);
 
     // Reset animation state after transition
     setTimeout(() => {
@@ -68,11 +80,34 @@ const Header = () => {
   };
 
   const handleNavClick = (sectionId) => {
-    const element =
-      document.getElementById(sectionId) ||
-      document.querySelector(`#${sectionId}`);
-    element?.scrollIntoView({ behavior: "smooth" });
-    closeMobileMenu();
+    // Store current scroll position
+    const currentScrollY = window.scrollY;
+
+    // Temporarily restore body scroll to allow scrollIntoView to work
+    document.body.style.overflow = "unset";
+    document.body.style.position = "unset";
+    document.body.style.width = "unset";
+    document.documentElement.style.overflow = "unset";
+
+    // Restore scroll position before scrolling to target
+    window.scrollTo(0, currentScrollY);
+
+    // Close mobile menu first
+    setIsMobileMenuOpen(false);
+    setShowItems(false);
+
+    // Then scroll to the section after a short delay
+    setTimeout(() => {
+      const element =
+        document.getElementById(sectionId) ||
+        document.querySelector(`#${sectionId}`);
+      element?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+
+    // Reset animation state
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 300);
   };
 
   return (
@@ -340,8 +375,10 @@ const Header = () => {
                   >
                     <button
                       onClick={() => {
-                        handleGetStarted();
-                        closeMobileMenu();
+                        setTimeout(() => {
+                          handleGetStarted();
+                          closeMobileMenu();
+                        }, 100);
                       }}
                       className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center justify-center space-x-2 relative overflow-hidden group"
                     >
