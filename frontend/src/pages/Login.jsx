@@ -255,7 +255,7 @@ const Login = () => {
                   setError("");
                   setFormData({ username: "", email: "", password: "" });
                 }}
-                className={`flex-1 py-2.5 px-4 text-center font-medium transition-all duration-200 rounded-lg relative z-10 ${
+                className={`flex-1 py-2.5 px-4 text-center font-medium cursor-pointer transition-all duration-200 rounded-lg relative z-10 ${
                   isLogin ? "text-white" : "text-gray-600 hover:text-gray-800"
                 }`}
               >
@@ -271,7 +271,7 @@ const Login = () => {
                   setError("");
                   setFormData({ username: "", email: "", password: "" });
                 }}
-                className={`flex-1 py-2.5 px-4 text-center font-medium transition-all duration-200 rounded-lg relative z-10 ${
+                className={`flex-1 py-2.5 px-4 text-center font-medium cursor-pointer transition-all duration-200 rounded-lg relative z-10 ${
                   !isLogin ? "text-white" : "text-gray-600 hover:text-gray-800"
                 }`}
               >
