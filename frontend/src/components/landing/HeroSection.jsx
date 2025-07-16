@@ -80,10 +80,19 @@ const HeroSection = () => {
                 🔥 Start Your AI Journey
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform" />
               </button>
-              <button className="border-2 border-gray-300 hover:border-blue-400 text-gray-700 hover:text-blue-600 px-8 py-4 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg hover:bg-blue-50 flex items-center justify-center">
+              <a
+                href="#demo"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document
+                    .getElementById("demo")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="border-2 border-gray-300 hover:border-blue-400 text-gray-700 hover:text-blue-600 px-8 py-4 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg hover:bg-blue-50 flex items-center justify-center"
+              >
                 <Play className="w-5 h-5 mr-2" />
-                Watch Demo
-              </button>
+                Try Demo
+              </a>
             </div>
 
             {/* Social proof */}
