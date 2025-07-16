@@ -9,7 +9,7 @@ const getAKBXRResponse = async (messages) => {
   };
 
   const response = await axios.post(
-    `${process.env.AKBXR_BASE_URL}/chat/completions`,
+    "https://api.akbxr.com/v1/chat/completions",
     akbxrRequest,
     {
       headers: {

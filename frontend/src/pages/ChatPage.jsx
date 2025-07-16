@@ -3,6 +3,9 @@ import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 
+const API_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
+
 // Import modular components
 import {
   ChatSidebar,
@@ -42,12 +45,15 @@ const ChatPage = () => {
 
   const loadChatSessions = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:3001/api/chat/sessions"
-      );
-      setSessions(response.data);
+      console.log("Loading sessions from:", `${API_URL}/chat/sessions`);
+      const response = await axios.get(`${API_URL}/chat/sessions`);
+      console.log("Sessions response:", response.data);
+      // Ensure we always set an array
+      const sessionsData = Array.isArray(response.data) ? response.data : [];
+      setSessions(sessionsData);
     } catch (error) {
       console.error("Failed to load chat sessions:", error);
+      console.error("API_URL:", API_URL);
 
       // Silent fail for user experience - no error toasts for loading sessions
       // New users or auth issues should not see error messages
@@ -59,7 +65,7 @@ const ChatPage = () => {
     try {
       // Add delay for better UX
       const [response] = await Promise.all([
-        axios.get(`http://localhost:3001/api/chat/history/${sessionId}`),
+        axios.get(`${API_URL}/chat/history/${sessionId}`),
         new Promise((resolve) => setTimeout(resolve, 400)), // 0.4 second delay
       ]);
 
@@ -107,7 +113,7 @@ const ChatPage = () => {
     try {
       // Add minimum delay for better UX
       const [response] = await Promise.all([
-        axios.post("http://localhost:3001/api/chat", {
+        axios.post(`${API_URL}/chat`, {
           message: userMessage,
           sessionId: currentSessionId,
           aiModel: selectedAiModel, // Include selected AI model
@@ -163,7 +169,7 @@ const ChatPage = () => {
     try {
       // Add delay for better UX
       const [_] = await Promise.all([
-        axios.delete(`http://localhost:3001/api/chat/sessions/${sessionId}`),
+        axios.delete(`${API_URL}/chat/sessions/${sessionId}`),
         new Promise((resolve) => setTimeout(resolve, 600)), // 0.6 second delay
       ]);
 
