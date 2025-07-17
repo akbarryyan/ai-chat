@@ -1,4 +1,4 @@
-import { getDbPool } from "../db.js";
+import { pool } from "../db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
@@ -11,7 +11,6 @@ export const register = async (req, res) => {
     }
 
     const { username, email, password } = req.body;
-    const pool = getDbPool();
 
     // Check if user already exists
     const [existingUser] = await pool.execute(
@@ -63,7 +62,6 @@ export const login = async (req, res) => {
     }
 
     const { email, password } = req.body;
-    const pool = getDbPool();
 
     // Find user
     const [users] = await pool.execute(
@@ -114,7 +112,6 @@ export const verifyToken = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const pool = getDbPool();
 
     const [users] = await pool.execute(
       "SELECT id, username, email FROM users WHERE id = ?",

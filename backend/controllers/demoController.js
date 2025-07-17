@@ -1,6 +1,8 @@
-import { getDbPool } from "../db.js";
+import { pool } from "../db.js";
 import crypto from "crypto";
 import axios from "axios";
+
+const AKBXR_API_KEY = "UNLIMITED-BETA";
 
 // Helper function to get AKBXR response
 const getAKBXRResponse = async (messages) => {
@@ -15,7 +17,7 @@ const getAKBXRResponse = async (messages) => {
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.AKBXR_API_KEY}`,
+        Authorization: `Bearer ${AKBXR_API_KEY}`,
       },
     }
   );
@@ -26,7 +28,6 @@ const getAKBXRResponse = async (messages) => {
 // Create a new anonymous chat session
 export const createDemoSession = async (req, res) => {
   try {
-    const pool = getDbPool();
     const sessionToken = crypto.randomUUID();
 
     const [result] = await pool.execute(
@@ -62,8 +63,6 @@ export const sendDemoMessage = async (req, res) => {
         message: "Session token and message or attachments are required",
       });
     }
-
-    const pool = getDbPool();
 
     // Verify session exists and not expired
     const [sessions] = await pool.execute(
@@ -689,8 +688,6 @@ export const getDemoHistory = async (req, res) => {
       });
     }
 
-    const pool = getDbPool();
-
     // Get session and verify it's not expired
     const [sessions] = await pool.execute(
       `SELECT id FROM anonymous_chat_sessions WHERE session_token = ? AND expires_at > NOW()`,
@@ -733,7 +730,6 @@ export const getDemoHistory = async (req, res) => {
 // Clean up expired sessions (call this periodically)
 export const cleanupExpiredSessions = async () => {
   try {
-    const pool = getDbPool();
     await pool.execute(
       `DELETE FROM anonymous_chat_sessions WHERE expires_at < NOW()`
     );

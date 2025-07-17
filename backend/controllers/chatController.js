@@ -1,5 +1,7 @@
-import { getDbPool } from "../db.js";
+import { pool } from "../db.js";
 import axios from "axios";
+
+const AKBXR_API_KEY = "UNLIMITED-BETA";
 
 // Helper function to get AKBXR response
 const getAKBXRResponse = async (messages) => {
@@ -14,7 +16,7 @@ const getAKBXRResponse = async (messages) => {
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.AKBXR_API_KEY}`,
+        Authorization: `Bearer ${AKBXR_API_KEY}`,
       },
     }
   );
@@ -30,7 +32,6 @@ export const sendChatMessage = async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    const pool = getDbPool();
     let currentSessionId = sessionId;
 
     // If no session provided, create a new one
@@ -374,7 +375,6 @@ export const sendChatMessage = async (req, res) => {
 export const getChatHistory = async (req, res) => {
   try {
     const { sessionId } = req.params;
-    const pool = getDbPool();
 
     const [rows] = await pool.execute(
       `SELECT ch.*, cs.title 
@@ -394,8 +394,6 @@ export const getChatHistory = async (req, res) => {
 
 export const getChatSessions = async (req, res) => {
   try {
-    const pool = getDbPool();
-
     const [rows] = await pool.execute(
       `SELECT cs.*, 
        (SELECT COUNT(*) FROM chat_history ch WHERE ch.session_id = cs.id) as message_count,
@@ -416,7 +414,6 @@ export const getChatSessions = async (req, res) => {
 export const deleteSession = async (req, res) => {
   try {
     const { sessionId } = req.params;
-    const pool = getDbPool();
 
     // Verify session belongs to user
     const [sessions] = await pool.execute(
